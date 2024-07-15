@@ -1,3 +1,7 @@
-# Team Member Real Names With GitHub UserNames
+# Group 9 - NEUQuest
 
-# Link to GitHub Repository
+# Kaustubha Eluri
+# Agllai Papaj
+# Winston Heinrichs
+# Harshitha Chava
+# Sampada Kulkarni
