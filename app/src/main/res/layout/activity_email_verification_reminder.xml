@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/message_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please verify your email address before logging in."
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/resend_verification_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resend Verification Email"
+        android:layout_below="@id/message_text_view"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/back_to_login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back to Login"
+        android:layout_below="@id/resend_verification_button"
+        android:layout_marginTop="16dp" />
+
+</RelativeLayout>
