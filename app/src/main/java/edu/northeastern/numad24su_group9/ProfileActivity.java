@@ -1,5 +1,6 @@
 package edu.northeastern.numad24su_group9;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -24,7 +25,9 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
-    private Button editInterestsButton, deleteAccountButton;
+    private Button editInterestsButton, deleteAccountButton, logoutButton;
+    private long backPressedTime;
+    private Toast backToast;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +67,7 @@ public class ProfileActivity extends AppCompatActivity {
         emailTextView = findViewById(R.id.profile_email_text_view);
         interestsTextView = findViewById(R.id.profile_interests_text_view);
         editInterestsButton = findViewById(R.id.edit_interests_button);
+        logoutButton = findViewById(R.id.logout_button);
         deleteAccountButton = findViewById(R.id.delete_account_button);
 
         editInterestsButton.setOnClickListener(v -> {
@@ -72,6 +76,8 @@ public class ProfileActivity extends AppCompatActivity {
             intent.putExtra("name", firebaseUser.getDisplayName());
             startActivity(intent);
         });
+
+        logoutButton.setOnClickListener(v -> logout());
 
         deleteAccountButton.setOnClickListener(v -> showDeleteAccountDialog());
 
@@ -123,6 +129,14 @@ public class ProfileActivity extends AppCompatActivity {
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .show();
     }
+
+    private void logout() {
+        firebaseAuth.signOut();
+        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void deleteAccount() {
         if (firebaseUser != null) {
             String uid = firebaseUser.getUid();
@@ -146,5 +160,17 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            if (backToast != null) backToast.cancel();
+            moveTaskToBack(true);
+        } else {
+            backToast = Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT);
+            backToast.show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 }

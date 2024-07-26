@@ -44,6 +44,16 @@
             android:text="Edit Interests"
             android:textColor="@color/white"
             android:layout_marginTop="16dp"/>
+
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@android:color/holo_blue_light"
+            android:textColor="@android:color/white"/>
+
         <Button
             android:id="@+id/delete_account_button"
             android:layout_width="wrap_content"

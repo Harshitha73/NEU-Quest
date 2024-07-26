@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString(AppConstants.UID_KEY, uid);
                                 editor.apply();
-                                Intent intent = new Intent(LoginActivity.this, RightNowActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                                 startActivity(intent);
                                 finish();
                             } else {
