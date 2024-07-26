@@ -67,6 +67,8 @@ public class InterestsActivity extends AppCompatActivity {
                 for (String interest : interests) {
                     CheckBox checkbox = new CheckBox(InterestsActivity.this);
                     checkbox.setText(interest);
+                    checkbox.setTextColor(getResources().getColor(android.R.color.black));
+                    checkbox.getButtonDrawable().setTint(getResources().getColor(android.R.color.black));
                     if (existingInterests.contains(interest)) {
                         checkbox.setChecked(true);
                     }
