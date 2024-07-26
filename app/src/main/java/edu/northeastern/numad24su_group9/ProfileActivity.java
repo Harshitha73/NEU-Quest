@@ -26,8 +26,6 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
     private Button editInterestsButton, deleteAccountButton, logoutButton;
-    private long backPressedTime;
-    private Toast backToast;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -164,13 +162,9 @@ public class ProfileActivity extends AppCompatActivity {
     @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
-        if (backPressedTime + 2000 > System.currentTimeMillis()) {
-            if (backToast != null) backToast.cancel();
-            moveTaskToBack(true);
-        } else {
-            backToast = Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT);
-            backToast.show();
-        }
-        backPressedTime = System.currentTimeMillis();
+        // Go back to RightNowActivity instead of logging out
+        Intent intent = new Intent(ProfileActivity.this, RightNowActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

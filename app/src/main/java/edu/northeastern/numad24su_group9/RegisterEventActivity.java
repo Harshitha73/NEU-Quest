@@ -283,4 +283,12 @@ public class RegisterEventActivity extends AppCompatActivity {
         eventData.put("createdBy", uid);
         return eventData;
     }
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onBackPressed() {
+        // Go back to RightNowActivity instead of logging out
+        Intent intent = new Intent(RegisterEventActivity.this, RightNowActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

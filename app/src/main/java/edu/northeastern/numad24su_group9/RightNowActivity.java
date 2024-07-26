@@ -1,9 +1,11 @@
 package edu.northeastern.numad24su_group9;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +27,8 @@ public class RightNowActivity extends AppCompatActivity {
 
     private DatabaseReference databaseRef;
     private List<Event> eventData;
+    private long backPressedTime;
+    private Toast backToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,5 +112,17 @@ public class RightNowActivity extends AppCompatActivity {
             finish();
         });
         recyclerView.setAdapter(eventAdapter);
+    }
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            if (backToast != null) backToast.cancel();
+            moveTaskToBack(true);
+        } else {
+            backToast = Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT);
+            backToast.show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 }

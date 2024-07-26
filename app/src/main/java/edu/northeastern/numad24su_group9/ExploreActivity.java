@@ -1,5 +1,6 @@
 package edu.northeastern.numad24su_group9;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -109,5 +110,13 @@ public class ExploreActivity extends AppCompatActivity {
             finish();
         });
         recyclerView.setAdapter(eventAdapter);
+    }
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onBackPressed() {
+        // Go back to RightNowActivity instead of logging out
+        Intent intent = new Intent(ExploreActivity.this, RightNowActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
