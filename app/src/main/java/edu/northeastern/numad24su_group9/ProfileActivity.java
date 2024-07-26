@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -22,7 +24,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
-    private Button editInterestsButton;
+    private Button editInterestsButton, deleteAccountButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
         emailTextView = findViewById(R.id.profile_email_text_view);
         interestsTextView = findViewById(R.id.profile_interests_text_view);
         editInterestsButton = findViewById(R.id.edit_interests_button);
+        deleteAccountButton = findViewById(R.id.delete_account_button);
 
         editInterestsButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, InterestsActivity.class);
@@ -69,6 +72,8 @@ public class ProfileActivity extends AppCompatActivity {
             intent.putExtra("name", firebaseUser.getDisplayName());
             startActivity(intent);
         });
+
+        deleteAccountButton.setOnClickListener(v -> showDeleteAccountDialog());
 
         if (firebaseUser != null) {
             String name = firebaseUser.getDisplayName();
@@ -109,5 +114,37 @@ public class ProfileActivity extends AppCompatActivity {
                 interestsTextView.setText("Error loading interests");
             }
         });
+    }
+    private void showDeleteAccountDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Account")
+                .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> deleteAccount())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+    private void deleteAccount() {
+        if (firebaseUser != null) {
+            String uid = firebaseUser.getUid();
+
+            // Delete user data from Firebase Database
+            databaseReference.child("Users").child(uid).removeValue().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // Delete user authentication
+                    firebaseUser.delete().addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            Toast.makeText(ProfileActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(ProfileActivity.this, "Failed to delete account", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(ProfileActivity.this, "Failed to delete user data", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }
