@@ -2,6 +2,7 @@ package edu.northeastern.numad24su_group9;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -56,26 +57,70 @@ public class InterestsActivity extends AppCompatActivity {
     }
 
     private void populateInterestOptions() {
-        for (String interest : interests) {
-            CheckBox checkbox = new CheckBox(this);
-            checkbox.setText(interest);
-            interestsContainer.addView(checkbox);
-            interestCheckboxes.add(checkbox);
-        }
+        firebaseDatabase.child("Users").child(uid).child("interests").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> existingInterests = new ArrayList<>();
+                for (DataSnapshot interestSnapshot : snapshot.getChildren()) {
+                    existingInterests.add(interestSnapshot.getValue(String.class));
+                }
+                for (String interest : interests) {
+                    CheckBox checkbox = new CheckBox(InterestsActivity.this);
+                    checkbox.setText(interest);
+                    if (existingInterests.contains(interest)) {
+                        checkbox.setChecked(true);
+                    }
+                    interestsContainer.addView(checkbox);
+                    interestCheckboxes.add(checkbox);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(InterestsActivity.this, "Error loading interests", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void saveInterests() {
+        selectedInterests.clear();
         for (CheckBox checkbox : interestCheckboxes) {
             if (checkbox.isChecked()) {
                 selectedInterests.add(checkbox.getText().toString());
             }
         }
+        Log.d("InterestsActivity", "Selected interests: " + selectedInterests);
         if (selectedInterests.isEmpty()) {
             Toast.makeText(this, "Please select at least one interest", Toast.LENGTH_SHORT).show();
         } else {
             // Do something with the selected interests, e.g., save them to the database
-            addUserToDatabase();
+          //  addUserToDatabase();
+            updateUserInterests();
         }
+    }
+    private void updateUserInterests() {
+        // Create a map with the data you want to set
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("interests", selectedInterests);
+
+        // Get a reference to the user's data in the database
+        DatabaseReference userRef = firebaseDatabase.child("Users").child(uid);
+
+        // Update user interests
+        userRef.child("interests").setValue(selectedInterests)
+                .addOnSuccessListener(aVoid -> {
+                    // Data has been successfully updated in the database
+                    Toast.makeText(InterestsActivity.this, "Interests updated", Toast.LENGTH_SHORT).show();
+
+                    // Go back to ProfileActivity
+                    Intent intent = new Intent(InterestsActivity.this, ProfileActivity.class);
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors that occurred during the update operation
+                    Toast.makeText(InterestsActivity.this, "Error updating interests: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void addUserToDatabase() {

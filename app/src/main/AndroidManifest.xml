@@ -49,6 +49,7 @@
         </activity>
         <activity android:name=".EmailVerificationActivity" />
         <activity android:name=".EmailVerificationReminderActivity" />
+        <activity android:name=".ProfileActivity" />
     </application>
 
 </manifest>

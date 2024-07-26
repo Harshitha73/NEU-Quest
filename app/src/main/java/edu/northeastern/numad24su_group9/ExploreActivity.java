@@ -39,6 +39,7 @@ public class ExploreActivity extends AppCompatActivity {
         Button rightNowButton = findViewById(R.id.right_now);
         Button exploreButton = findViewById(R.id.explore);
         Button registerEventButton = findViewById(R.id.register_event);
+        Button profileButton = findViewById(R.id.profile);
 
         // Set click listeners for the buttons
         exploreButton.setEnabled(false);
@@ -51,6 +52,12 @@ public class ExploreActivity extends AppCompatActivity {
 
         registerEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(ExploreActivity.this, RegisterEventActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        profileButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
             finish();
         });
@@ -77,6 +84,7 @@ public class ExploreActivity extends AppCompatActivity {
                     Event event = new Event(title, description, image);
                     eventData.add(event);
                 }
+
 
                 // Update the UI with the sorted data
                 updateUI();

@@ -28,6 +28,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
         currentUser = firebaseAuth.getCurrentUser();
 
         if (currentUser != null) {
+            String displayName = currentUser.getDisplayName();
             TextView infoTextView = findViewById(R.id.info_text_view);
             infoTextView.setText("A verification email has been sent to " + currentUser.getEmail() + ". Please check your inbox.");
 
@@ -35,7 +36,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
             checkVerificationTask = new Runnable() {
                 @Override
                 public void run() {
-                    checkEmailVerification();
+                    checkEmailVerification(displayName);
                     handler.postDelayed(this, CHECK_INTERVAL);
                 }
             };
@@ -43,19 +44,21 @@ public class EmailVerificationActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No user is logged in", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(EmailVerificationActivity.this, LoginActivity.class);
+            Intent intent = new Intent(EmailVerificationActivity.this, InterestsActivity.class);
             startActivity(intent);
             finish();
         }
     }
 
-    private void checkEmailVerification() {
+    private void checkEmailVerification(String displayName) {
         if (currentUser != null) {
             currentUser.reload().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     if (currentUser.isEmailVerified()) {
                         handler.removeCallbacks(checkVerificationTask);
                         Intent intent = new Intent(EmailVerificationActivity.this, InterestsActivity.class);
+                        intent.putExtra("USER_NAME", displayName);
+                        intent.putExtra("uid", currentUser.getUid());
                         startActivity(intent);
                         finish();
                     }

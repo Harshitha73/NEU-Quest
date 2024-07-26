@@ -3,6 +3,7 @@ package edu.northeastern.numad24su_group9;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -41,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (user != null) {
                             if (user.isEmailVerified()) {
                                 String uid = user.getUid();
+                                Log.d("LoginActivity", "User Display Name: " + user.getDisplayName());
                                 Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
                                 SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();

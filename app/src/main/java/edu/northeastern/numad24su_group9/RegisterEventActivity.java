@@ -83,7 +83,6 @@ public class RegisterEventActivity extends AppCompatActivity {
         Button buttonSelectImage = findViewById(R.id.buttonSelectImage);
         Button createEventButton = findViewById(R.id.create_event_button);
 
-        // Set click listeners for the date and time edit text views
         eventStartDateEditText.setOnClickListener(v -> showDatePicker(eventStartDateEditText));
         eventStartTimeEditText.setOnClickListener(v -> showTimePicker(eventStartTimeEditText));
         eventEndDateEditText.setOnClickListener(v -> showDatePicker(eventEndDateEditText));
@@ -93,7 +92,6 @@ public class RegisterEventActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
                         Intent data = result.getData();
                         assert data != null;
                         imageUri = data.getData();
