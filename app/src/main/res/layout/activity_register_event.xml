@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#F5F5F5"
+    android:background="@color/light_gray"
     android:padding="24dp">
 
     <LinearLayout
@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@string/create_event"
-            android:textColor="#212121"
+            android:textColor="@color/black"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -26,13 +26,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="@string/enter_name">
+            android:hint="@string/enter_name"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_name_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -42,14 +47,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="@string/event_description">
+            android:hint="@string/event_description"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_description_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
-                android:textColorHint="#546E7A"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -59,13 +68,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="@string/event_price">
+            android:hint="@string/event_price"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_price_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -75,7 +89,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="@string/start_date">
+            android:hint="@string/start_date"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_start_date_edittext"
@@ -84,7 +101,8 @@
                 android:inputType="none"
                 android:focusable="false"
                 android:clickable="true"
-                android:textColorHint="#546E7A"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -94,7 +112,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="@string/start_time">
+            android:hint="@string/start_time"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_start_time_edittext"
@@ -103,7 +124,8 @@
                 android:inputType="none"
                 android:focusable="false"
                 android:clickable="true"
-                android:textColorHint="#546E7A"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -113,7 +135,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="@string/end_date">
+            android:hint="@string/end_date"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_end_date_edittext"
@@ -122,7 +147,9 @@
                 android:inputType="none"
                 android:focusable="false"
                 android:clickable="true"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+                tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -131,7 +158,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="@string/end_time">
+            android:hint="@string/end_time"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_end_time_edittext"
@@ -140,6 +170,8 @@
                 android:inputType="none"
                 android:focusable="false"
                 android:clickable="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -162,13 +194,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="@string/event_location">
+            android:hint="@string/event_location"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_location_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -178,13 +215,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/event_register_link"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            app:hintTextColor="@color/black"
+            app:boxStrokeColor="@color/black"
+            android:textColorHint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_register_link_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
         </com.google.android.material.textfield.TextInputLayout>

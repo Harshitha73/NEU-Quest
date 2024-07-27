@@ -8,15 +8,33 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainActivity extends AppCompatActivity {
 
 
     private long backPressedTime;
     private Toast backToast;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize Firebase Auth
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        // Check if user is logged in
+        if (firebaseUser != null && firebaseUser.isEmailVerified()) {
+            // User is logged in and email is verified, navigate to RightNowActivity
+            Intent intent = new Intent(MainActivity.this, RightNowActivity.class);
+            startActivity(intent);
+            finish();
+            return; // Exit the method
+        }
 
         // Find the buttons in the layout
         Button signUpButton = findViewById(R.id.signUpButton);
