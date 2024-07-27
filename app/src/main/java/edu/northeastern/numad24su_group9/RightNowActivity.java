@@ -108,6 +108,7 @@ public class RightNowActivity extends AppCompatActivity {
         eventAdapter.setOnItemClickListener((event) -> {
             Intent intent = new Intent(RightNowActivity.this, EventDetailsActivity.class);
             intent.putExtra("event", event);
+            intent.putExtra("previousActivity", "RightNowActivity");
             startActivity(intent);
             finish();
         });

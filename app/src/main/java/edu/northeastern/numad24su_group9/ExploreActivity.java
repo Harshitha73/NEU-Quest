@@ -106,6 +106,7 @@ public class ExploreActivity extends AppCompatActivity {
         eventAdapter.setOnItemClickListener((event) -> {
             Intent intent = new Intent(ExploreActivity.this, EventDetailsActivity.class);
             intent.putExtra("event", event);
+            intent.putExtra("previousActivity", "ExploreActivity");
             startActivity(intent);
             finish();
         });

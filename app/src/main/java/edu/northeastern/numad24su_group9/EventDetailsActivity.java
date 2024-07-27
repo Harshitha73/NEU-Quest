@@ -15,6 +15,7 @@ import edu.northeastern.numad24su_group9.model.Event;
 
 public class EventDetailsActivity extends AppCompatActivity {
 
+    private String previousActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +34,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         Button addButton = findViewById(R.id.add_button);
 
         Event event = (Event) getIntent().getSerializableExtra("event");
+        previousActivity = getIntent().getStringExtra("previousActivity");
+
 
         // Set the event details in the UI components
         assert event != null;
@@ -54,5 +57,19 @@ public class EventDetailsActivity extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(event.getRegisterLink()));
             startActivity(intent);
         });
+    }
+    @Override
+    public void onBackPressed() {
+        Intent intent;
+        if ("RightNowActivity".equals(previousActivity)) {
+            intent = new Intent(EventDetailsActivity.this, RightNowActivity.class);
+        } else if ("ExploreActivity".equals(previousActivity)) {
+            intent = new Intent(EventDetailsActivity.this, ExploreActivity.class);
+        } else {
+            super.onBackPressed();
+            return;
+        }
+        startActivity(intent);
+        finish();
     }
 }
