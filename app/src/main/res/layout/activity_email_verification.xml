@@ -2,15 +2,41 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="@color/light_gray">
+    android:padding="24dp">
 
     <TextView
         android:id="@+id/info_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Please check your email for verification"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="120dp"
+        android:text="Please verify your email"
         android:textColor="@color/black"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/additional_text_view"
+        android:layout_width="343dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/info_text_view"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="To ensure your account's security, please verify your email. Check your inbox for the verification link."
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/verify_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/additional_text_view"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="Resend Verification Email"
+        android:textColor="@color/white"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="12dp"
         android:textSize="16sp" />
 
 </RelativeLayout>
