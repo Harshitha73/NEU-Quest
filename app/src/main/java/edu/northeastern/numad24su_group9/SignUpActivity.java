@@ -38,7 +38,7 @@ public class SignUpActivity extends AppCompatActivity {
         String name = nameEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
-        if (!email.endsWith("@northeastern.edu")) {
+        if (!email.endsWith("@northeastern.edu") && !email.endsWith("@husky.neu.edu")) {
             Toast.makeText(SignUpActivity.this, "We only accept 'northeastern.edu' email ids", Toast.LENGTH_SHORT).show();
             return;
         }
