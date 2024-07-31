@@ -208,28 +208,33 @@ public class RegisterEventActivity extends AppCompatActivity {
     }
 
     private boolean uploadImageToFirebase() throws InterruptedException {
+        if(imageUri != null) {
+            // Create a reference to the file in Firebase Storage
+            StorageReference fileReference = storageReference.child(UUID.randomUUID().toString());
 
-        // Create a reference to the file in Firebase Storage
-        StorageReference fileReference = storageReference.child(UUID.randomUUID().toString());
-
-        // Upload the file to Firebase Storage
-        StorageTask<UploadTask.TaskSnapshot> uploadTask = fileReference.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    // Handle the successful upload
-                    Toast.makeText(RegisterEventActivity.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-                })
-                .addOnProgressListener(snapshot -> {
-                    // Handle the upload progress
-                    double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
-                    Log.d("Firebase Upload", "Upload is " + progress + "% done");
-                })
-                .addOnFailureListener(e -> {
-                    // Handle the upload failure
-                    Toast.makeText(RegisterEventActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
-                });
-        TimeUnit.SECONDS.sleep(5);
-        eventImage = fileReference.getName();
-        return uploadTask.isSuccessful();
+            // Upload the file to Firebase Storage
+            StorageTask<UploadTask.TaskSnapshot> uploadTask = fileReference.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        // Handle the successful upload
+                        Toast.makeText(RegisterEventActivity.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnProgressListener(snapshot -> {
+                        // Handle the upload progress
+                        double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                        Log.d("Firebase Upload", "Upload is " + progress + "% done");
+                    })
+                    .addOnFailureListener(e -> {
+                        // Handle the upload failure
+                        Toast.makeText(RegisterEventActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                    });
+            TimeUnit.SECONDS.sleep(5);
+            eventImage = fileReference.getName();
+            return uploadTask.isSuccessful();
+        }
+        else {
+            eventImage = "husky_default_image.png";
+            return true;
+        }
     }
 
     private void saveEventToFirebase() throws InterruptedException {
@@ -259,7 +264,7 @@ public class RegisterEventActivity extends AppCompatActivity {
                 Toast.makeText(RegisterEventActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(2);
     }
 
     private void startNextActivity() {
