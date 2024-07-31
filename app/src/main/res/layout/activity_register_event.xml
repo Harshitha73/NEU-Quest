@@ -77,7 +77,7 @@
                 android:id="@+id/event_price_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:inputType="numberDecimal"
                 android:textColor="@color/black"
                 android:textColorHint="@color/black"
                 tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
@@ -231,15 +231,36 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/create_event_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:backgroundTint="#4CAF50"
-            android:text="@string/create_event"
-            android:textColor="#FFFFFF"
-            tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck,TouchTargetSizeCheck" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancelCreateEvent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:backgroundTint="#E65353"
+                android:text="@android:string/cancel" />
+
+            <Button
+                android:id="@+id/create_event_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:text="@string/create_event"
+                android:textColor="#FFFFFF"
+                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck,TouchTargetSizeCheck" />
+
+
+        </LinearLayout>
 
     </LinearLayout>
 

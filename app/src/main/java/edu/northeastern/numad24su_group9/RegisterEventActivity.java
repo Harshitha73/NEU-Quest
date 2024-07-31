@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputFilter;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -73,6 +74,7 @@ public class RegisterEventActivity extends AppCompatActivity {
         eventNameEditText = findViewById(R.id.event_name_edittext);
         eventDescriptionEditText = findViewById(R.id.event_description_edittext);
         eventPriceEditText = findViewById(R.id.event_price_edittext);
+        eventPriceEditText.setFilters(new InputFilter[]{new CurrencyInputFilter()});
         eventLocationEditText = findViewById(R.id.event_location_edittext);
         eventStartTimeEditText = findViewById(R.id.event_start_time_edittext);
         eventEndTimeEditText = findViewById(R.id.event_end_time_edittext);
@@ -82,6 +84,8 @@ public class RegisterEventActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         Button buttonSelectImage = findViewById(R.id.buttonSelectImage);
         Button createEventButton = findViewById(R.id.create_event_button);
+        Button cancelEventButton = findViewById(R.id.cancelCreateEvent);
+
 
         eventStartDateEditText.setOnClickListener(v -> showDatePicker(eventStartDateEditText));
         eventStartTimeEditText.setOnClickListener(v -> showTimePicker(eventStartTimeEditText));
@@ -105,6 +109,9 @@ public class RegisterEventActivity extends AppCompatActivity {
 
         // Set the click listener for the create event button
         createEventButton.setOnClickListener(v -> saveEvent());
+
+        // Set the click listener for the cancel create event button
+        cancelEventButton.setOnClickListener(v -> startNextActivity());
     }
 
     private void saveEvent() {
