@@ -1,5 +1,7 @@
-package edu.northeastern.numad24su_group9;
+package edu.northeastern.numad24su_group9.recycler;
 
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +13,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import edu.northeastern.numad24su_group9.model.Event;
-
 import java.util.List;
 
-public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
-    private final List<Event> events;
-    private EventAdapter.OnItemClickListener listener;
+import edu.northeastern.numad24su_group9.R;
+import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
+import edu.northeastern.numad24su_group9.model.Event;
 
-    public EventAdapter(List<Event> events) {
+public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
+    private List<Event> events;
+    private EventAdapter.OnItemClickListener listener;
+    private EventAdapter.OnItemSelectListener selectListener;
+
+    public EventAdapter() {}
+
+    public void updateData(List<Event> events) {
         this.events = events;
     }
 
@@ -35,6 +42,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         void onItemClick(Event event);
     }
 
+    public interface OnItemSelectListener {
+        void onItemSelect(Event event);
+    }
+
+    public void setOnItemSelectListener(EventAdapter.OnItemSelectListener listener) {
+        this.selectListener = listener;
+    }
+
     public void setOnItemClickListener(EventAdapter.OnItemClickListener listener) {
         this.listener = listener;
     }
@@ -42,10 +57,20 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = events.get(position);
-        Picasso.get().load(event.getImage()).into(holder.imageView);
+
+        Log.d("Event image", event.getImage());
+
+        EventImageRepository eventImageRepository = new EventImageRepository();
+
+        Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(holder.imageView);
         holder.titleTextView.setText(event.getTitle());
         holder.descriptionTextView.setText(event.getDescription());
         holder.itemView.setOnClickListener(v -> handleEventClick(event));
+        holder.itemView.setOnLongClickListener(v -> {
+            v.setBackgroundColor(Color.YELLOW);
+            handleEventSelect(event);
+            return true;
+        });
     }
 
     @Override
@@ -60,6 +85,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         }
     }
 
+    private void handleEventSelect(Event event) {
+        if (selectListener != null) {
+            selectListener.onItemSelect(event);
+        }
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
         public TextView titleTextView;
@@ -67,9 +98,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.image_view);
-            titleTextView = itemView.findViewById(R.id.title_text_view);
-            descriptionTextView = itemView.findViewById(R.id.description_text_view);
+            imageView = itemView.findViewById(R.id.event_image);
+            titleTextView = itemView.findViewById(R.id.event_name);
+            descriptionTextView = itemView.findViewById(R.id.event_description);
         }
     }
 }

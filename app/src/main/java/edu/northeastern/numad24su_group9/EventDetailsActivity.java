@@ -9,8 +9,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
+import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
 import edu.northeastern.numad24su_group9.model.Event;
 
 public class EventDetailsActivity extends AppCompatActivity {
@@ -31,7 +33,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         TextView eventPriceTextView = findViewById(R.id.event_price);
         TextView eventLocationTextView = findViewById(R.id.event_location);
         ImageView eventImageView = findViewById(R.id.event_image);
-        Button addButton = findViewById(R.id.add_button);
+        Button registerButton = findViewById(R.id.register_button);
+        FloatingActionButton showLocationButton = findViewById(R.id.show_location_fab);
 
         Event event = (Event) getIntent().getSerializableExtra("event");
         previousActivity = getIntent().getStringExtra("previousActivity");
@@ -48,14 +51,27 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventPriceTextView.setText(event.getPrice());
         eventLocationTextView.setText(event.getLocation());
 
+        //On Location click, open maps
+        showLocationButton.setOnClickListener(v -> {
+            if (!event.getLocation().isEmpty()) {
+                // Open the Maps application with the specified address
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + Uri.encode(event.getLocation()));
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+            }
+        });
+
         // Load the event image
-        Picasso.get().load(event.getImage()).into(eventImageView);
+        EventImageRepository eventImageRepository = new EventImageRepository();
+        Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(eventImageView);
 
         // Set the register button click listener
-        addButton.setOnClickListener(v -> {
+        registerButton.setOnClickListener(v -> {
             // Launch the browser or an in-app registration flow with the registerUrl
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(event.getRegisterLink()));
             startActivity(intent);
+            finish();
         });
     }
     @Override

@@ -5,13 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,8 +29,10 @@ import java.util.List;
 
 public class RightNowActivity extends AppCompatActivity {
 
-    private DatabaseReference databaseRef;
-    private List<Event> eventData;
+    private EventAdapter eventAdapter;
+    private RecyclerView recyclerView;
+    private List<Event> allEvents;
+
     private long backPressedTime;
     private Toast backToast;
 
@@ -35,9 +41,10 @@ public class RightNowActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_right_now);
 
-        // Get a reference to the Firebase Realtime Database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseRef = database.getReference("Events");
+        // Find the buttons
+        FloatingActionButton registerEventButton = findViewById(R.id.register_button);
+        FloatingActionButton userProfile = findViewById(R.id.user_profile_fab);
+        SearchView searchView = findViewById(R.id.searchView);
 
         // Find the buttons
         Button rightNowButton = findViewById(R.id.right_now);
@@ -46,59 +53,62 @@ public class RightNowActivity extends AppCompatActivity {
         Button profileButton = findViewById(R.id.profile);
 
         // Set click listeners for the buttons
-        rightNowButton.setEnabled(false);
-
-        exploreButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ExploreActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
         registerEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, RegisterEventActivity.class);
             startActivity(intent);
             finish();
         });
 
-        profileButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ProfileActivity.class);
-            startActivity(intent);
+        userProfile.setOnClickListener(v -> {
+            startActivity(new Intent(this, UserProfileActivity.class));
             finish();
         });
 
-        // Fetch the data from the database
-        fetchDataFromDatabase();
-    }
-
-    private void fetchDataFromDatabase() {
-        eventData = new ArrayList<>();
-
-        databaseRef.addValueEventListener(new ValueEventListener() {
+        // Set up the search functionality
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // Clear the previous data
-                eventData.clear();
-
-                // Iterate through the data snapshot and add the user data to the list
-                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                    String title = childSnapshot.child("title").getValue(String.class);
-                    String image = childSnapshot.child("image").getValue(String.class);
-                    String description = childSnapshot.child("description").getValue(String.class);
-
-                    Event event = new Event(title, description, image);
-                    eventData.add(event);
-                }
-
-                // Update the UI with the sorted data
-                updateUI();
+            public boolean onQueryTextSubmit(String query) {
+                filterEvents(query);
+                return true;
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle any errors that occurred while fetching the data
-                Log.e("Firebase", "Error fetching data: " + error.getMessage());
+            public boolean onQueryTextChange(String newText) {
+                filterEvents(newText);
+                return true;
             }
         });
+
+        getEvents();
+    }
+
+    public void getEvents() {
+        allEvents = new ArrayList<>();
+
+        EventRepository eventRepository = new EventRepository();
+
+        Task<DataSnapshot> task = eventRepository.getEventRef().get();
+        // Handle any exceptions that occur during the database query
+        task.addOnSuccessListener(dataSnapshot -> {
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+                    Event event = new Event();
+                    event.setEventID(eventSnapshot.getKey());
+                    event.setTitle(eventSnapshot.child("title").getValue(String.class));
+                    event.setImage(eventSnapshot.child("image").getValue(String.class));
+                    event.setDescription(eventSnapshot.child("description").getValue(String.class));
+                    event.setStartTime(eventSnapshot.child("startTime").getValue(String.class));
+                    event.setStartDate(eventSnapshot.child("startDate").getValue(String.class));
+                    event.setEndTime(eventSnapshot.child("endTime").getValue(String.class));
+                    event.setEndDate(eventSnapshot.child("endDate").getValue(String.class));
+                    event.setPrice(eventSnapshot.child("price").getValue(String.class));
+                    event.setLocation(eventSnapshot.child("location").getValue(String.class));
+                    event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
+                    allEvents.add(event);
+                }
+                updateUI(allEvents);
+            }
+        }).addOnFailureListener(Throwable::printStackTrace);
     }
 
     private void updateUI() {
@@ -114,6 +124,20 @@ public class RightNowActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(eventAdapter);
     }
+
+    private void filterEvents(String query) {
+        // Implement your logic to filter the event items based on the search query
+        List<Event> filteredEvents = new ArrayList<>();
+        for (Event event : allEvents) {
+            if (event.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                    event.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                filteredEvents.add(event);
+            }
+        }
+        eventAdapter.updateData(filteredEvents);
+        recyclerView.setAdapter(eventAdapter);
+    }
+
     @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {

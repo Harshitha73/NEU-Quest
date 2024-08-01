@@ -8,33 +8,62 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.io.Serializable;
 
 public class Event implements Serializable {
-    private final String title;
+    private String title;
     private String startTime;
     private String endTime;
     private String startDate;
     private String endDate;
-    private final String description;
+    private String description;
     private String price;
     private String location;
     private String registerLink;
-    private final String image;
+    private String image;
+    private String eventID;
+    private String createdBy;
 
-    public Event(String title, String description, String image) {
+    public Event() {}
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
+    }
+
+    public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setImage(String image) {
         this.image = image;
     }
 
-    public Event(String title, String startTime, String startDate, String endTime, String endDate, String description, String price, String location, String image, String registerLink) {
-        this.title = title;
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
-        this.startDate = startDate;
+    }
+
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
-        this.description = description;
+    }
+
+    public void setPrice(String price) {
         this.price = price;
+    }
+
+    public void setLocation(String location) {
         this.location = location;
-        this.image = image;
+    }
+
+    public void setRegisterLink(String registerLink) {
         this.registerLink = registerLink;
     }
 
@@ -46,11 +75,8 @@ public class Event implements Serializable {
         return description;
     }
 
-    public Uri getImage() {
-
-        Task<Uri> urlTask = FirebaseStorage.getInstance().getReference().child(image).getDownloadUrl();
-        while (!urlTask.isSuccessful());
-        return urlTask.getResult();
+    public String getImage() {
+        return image;
     }
 
     public String getStartTime() {
@@ -79,6 +105,18 @@ public class Event implements Serializable {
 
     public String getRegisterLink() {
         return registerLink;
+    }
+
+    public String getEventID() {
+        return eventID;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }
 

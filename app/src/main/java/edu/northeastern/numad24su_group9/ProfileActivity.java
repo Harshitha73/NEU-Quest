@@ -1,16 +1,28 @@
 package edu.northeastern.numad24su_group9;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +30,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.northeastern.numad24su_group9.firebase.repository.database.TripRepository;
+import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
+import edu.northeastern.numad24su_group9.firebase.repository.storage.UserProfileRepository;
+import edu.northeastern.numad24su_group9.model.Trip;
+import edu.northeastern.numad24su_group9.model.User;
+import edu.northeastern.numad24su_group9.recycler.TripAdapter;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -26,40 +49,68 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
     private Button editInterestsButton, deleteAccountButton, logoutButton;
+    private ActivityResultLauncher<Intent> launcher;
+    private ImageView userProfileImage;
+    private Uri imageUri;
+    private String uid;
+    private User user;
+    private UserRepository userRepository;
+    private UserProfileRepository userProfileRepo;
+    private TextView userNameTextView;
+    private List<Trip> trips;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        // Set up the click listener on the user's profile image view
+        userProfileImage = findViewById(R.id.user_profile_image);
+        userProfileImage.setOnClickListener(v -> pickImage());
+
+        // Get the current user's ID
+        SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
+
+        userRepository = new UserRepository(uid);
+        userProfileRepo = new UserProfileRepository(uid);
+
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        Button rightNowButton = findViewById(R.id.right_now);
-        Button exploreButton = findViewById(R.id.explore);
-        Button registerEventButton = findViewById(R.id.register_event);
-        Button profileButton = findViewById(R.id.profile);
+        userNameTextView = findViewById(R.id.user_name);
+        TextView changeProfileImageTextView = findViewById(R.id.change_profile_image);
 
-        profileButton.setEnabled(false);
+        // Set the click listener on the "Change Profile Image" TextView
+        changeProfileImageTextView.setOnClickListener(v -> pickImage());
 
-        exploreButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ExploreActivity.class);
+        getUser(uid);
+
+        TextView plannedTripsTextView = findViewById(R.id.planned_trips_title);
+        plannedTripsTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, PlanningTripActivity.class);
             startActivity(intent);
             finish();
         });
 
-        registerEventButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, RegisterEventActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        launcher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK ) {
+                        // There are no request codes
+                        Intent data = result.getData();
+                        assert data != null;
+                        imageUri = data.getData();
+                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        Picasso.get().load(imageUri).into(userProfileImage);
+                        userProfileRepo.uploadProfileImage(imageUri, uid);
 
-        rightNowButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, RightNowActivity.class);
-            startActivity(intent);
-            finish();
-        });
+                        DatabaseReference userRef = userRepository.getUserRef();
+                        userRef.child("profileImage").setValue(uid);
+                    }
+                }
+        );
 
         nameTextView = findViewById(R.id.profile_name_text_view);
         emailTextView = findViewById(R.id.profile_email_text_view);
@@ -88,11 +139,111 @@ public class ProfileActivity extends AppCompatActivity {
             loadUserInterests();
         }
     }
+
+    // Method to launch the image picker
+    @SuppressLint("IntentReset")
+    private void pickImage() {
+        // Create an intent to open the file picker
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*"); // This allows the user to select files of any type
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        launcher.launch(intent);
+    }
+
+    public void getUser(String uid) {
+
+        user = new User();
+        user.setUserID(uid);
+
+        Task<DataSnapshot> task = userRepository.getUserRef().get();
+        task.addOnSuccessListener(dataSnapshot -> {
+            if (dataSnapshot.exists()) {
+                user.setName(dataSnapshot.child("name").getValue(String.class));
+                user.setProfileImage(dataSnapshot.child("profileImage").getValue(String.class));
+                List<String> tripIDs = new ArrayList<>();
+                for (DataSnapshot tripSnapshot : dataSnapshot.child("itinerary").getChildren()) {
+                    String tripID = tripSnapshot.getValue(String.class);
+                    tripIDs.add(tripID);
+                }
+                user.setTrips(tripIDs);
+                updateUI();
+            }
+        }).addOnFailureListener(e -> {
+            // Handle any exceptions that occur during the database query
+            Log.e("UserRepository", "Error retrieving user data: " + e.getMessage());
+        });
+    }
+
+    public void updateUI() {
+
+        assert user != null;
+        userNameTextView.setText(user.getName());
+
+        Uri profileImageUri = userProfileRepo.getProfileImage(user.getProfileImage());
+        Picasso.get().load(profileImageUri).into(userProfileImage);
+
+        if (user.getTrips() != null) {
+            getTrips();
+        }
+    }
+
+
+    public void getTrips() {
+
+        TripRepository tripRepository = new TripRepository();
+        trips = new ArrayList<>();
+
+        Task<DataSnapshot> task = tripRepository.getTripRef().get();
+        // Handle any exceptions that occur during the database query
+        task.addOnSuccessListener(dataSnapshot -> {
+            if (dataSnapshot.exists()) {
+
+                for (String tripID : user.getTrips()) {
+                    Trip trip = new Trip();
+                    trip.setTripID(tripID);
+                    trip.setTitle(dataSnapshot.child(tripID).child("title").getValue(String.class));
+                    trip.setMinBudget(dataSnapshot.child(tripID).child("minBudget").getValue(String.class));
+                    trip.setMaxBudget(dataSnapshot.child(tripID).child("maxBudget").getValue(String.class));
+                    trip.setMealsIncluded(dataSnapshot.child(tripID).child("mealsIncluded").getValue(String.class));
+                    trip.setTransportIncluded(dataSnapshot.child(tripID).child("transportIncluded").getValue(String.class));
+                    trip.setLocation(dataSnapshot.child(tripID).child("location").getValue(String.class));
+                    trip.setStartDate(dataSnapshot.child(tripID).child("startDate").getValue(String.class));
+                    trip.setStartTime(dataSnapshot.child(tripID).child("startTime").getValue(String.class));
+                    trip.setEndDate(dataSnapshot.child(tripID).child("endDate").getValue(String.class));
+                    trip.setEndTime(dataSnapshot.child(tripID).child("endTime").getValue(String.class));
+                    List<String> eventIDs = new ArrayList<>();
+                    for (DataSnapshot eventSnapshot : dataSnapshot.child(tripID).child("eventIDs").getChildren()) {
+                        String eventID = eventSnapshot.getValue(String.class);
+                        eventIDs.add(eventID);
+                    }
+                    trip.setEventIDs(eventIDs);
+                    trips.add(trip);
+                }
+
+                // Setup recycler view and show all trips
+                RecyclerView tripRecyclerView = findViewById(R.id.trips_recycler_view);
+                tripRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+                TripAdapter tripAdapter = new TripAdapter(trips);
+                tripAdapter.setOnItemClickListener((trip) -> {
+                    Intent intent = new Intent(ProfileActivity.this, TripDetailsActivity.class);
+                    intent.putExtra("trip", trip);
+                    startActivity(intent);
+                    finish();
+                });
+                tripRecyclerView.setAdapter(tripAdapter);
+            }
+        }).addOnFailureListener(Throwable::printStackTrace);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         loadUserInterests();
     }
+
     private void loadUserInterests() {
         String uid = firebaseUser.getUid();
         databaseReference.child("Users").child(uid).child("interests").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -119,6 +270,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
+
     private void showDeleteAccountDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Account")

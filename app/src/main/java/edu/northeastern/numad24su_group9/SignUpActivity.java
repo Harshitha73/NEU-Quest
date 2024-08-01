@@ -14,19 +14,24 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
 
+import java.util.ArrayList;
 import java.util.Objects;
+
+import edu.northeastern.numad24su_group9.firebase.AuthConnector;
+import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
+import edu.northeastern.numad24su_group9.model.User;
 
 public class SignUpActivity extends AppCompatActivity {
     private EditText nameEditText, emailEditText, passwordEditText;
-    private FirebaseAuth firebaseAuth;
+    private String uid, name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        FirebaseApp.initializeApp(this);
-        firebaseAuth = FirebaseAuth.getInstance();
+
         nameEditText = findViewById(R.id.name_edittext);
         emailEditText = findViewById(R.id.email_edittext);
         passwordEditText = findViewById(R.id.password_edittext);
@@ -34,19 +39,36 @@ public class SignUpActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(v -> handleSignUp());
     }
 
+    private void addUserToDatabase() {
+        // Creating a user
+        User currentUser = new User();
+        currentUser.setName(name);
+        currentUser.setUserID(uid);
+        currentUser.setTrips(new ArrayList<>());
+        currentUser.setProfileImage("user_profile.png");
+
+        // Get a reference to the user's data in the database
+        UserRepository userRepository = new UserRepository(uid);
+        DatabaseReference userRef = userRepository.getUserRef();
+
+        // Save user in the database
+        userRef.setValue(currentUser);
+    }
+
     private void handleSignUp() {
         String name = nameEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
+
         if (!email.endsWith("@northeastern.edu") && !email.endsWith("@husky.neu.edu")) {
             Toast.makeText(SignUpActivity.this, "We only accept 'northeastern.edu' email ids", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+        AuthConnector.getFirebaseAuth().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        FirebaseUser user = AuthConnector.getFirebaseAuth().getCurrentUser();
                         if (user != null) {
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(name)
@@ -60,10 +82,14 @@ public class SignUpActivity extends AppCompatActivity {
                                                         if (task1.isSuccessful()) {
                                                             Toast.makeText(SignUpActivity.this, "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show();
                                                             String uid = user.getUid();
+
                                                             SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
                                                             SharedPreferences.Editor editor = sharedPreferences.edit();
                                                             editor.putString(AppConstants.UID_KEY, uid);
                                                             editor.apply();
+
+                                                            addUserToDatabase();
+
                                                             Intent intent = new Intent(SignUpActivity.this, EmailVerificationActivity.class);
                                                             intent.putExtra("uid", uid);
                                                             startActivity(intent);

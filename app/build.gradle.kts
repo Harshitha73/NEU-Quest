@@ -49,4 +49,7 @@ dependencies {
     implementation(libs.picasso)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.auth)
+    implementation(libs.generativeai)
+    implementation(libs.material.v130alpha02)
+    implementation(libs.guava)
 }
