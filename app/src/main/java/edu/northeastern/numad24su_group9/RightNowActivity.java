@@ -99,11 +99,11 @@ public class RightNowActivity extends AppCompatActivity {
         }).addOnFailureListener(Throwable::printStackTrace);
     }
 
-    private void updateUI(List<Event> allEvents) {
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+    private void updateUI(List<Event> events) {
+        recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        EventAdapter eventAdapter = new EventAdapter();
-        eventAdapter.updateData(allEvents);
+        eventAdapter = new EventAdapter();
+        eventAdapter.updateData(events);
         eventAdapter.setOnItemClickListener((event) -> {
             Intent intent = new Intent(RightNowActivity.this, EventDetailsActivity.class);
             intent.putExtra("event", event);

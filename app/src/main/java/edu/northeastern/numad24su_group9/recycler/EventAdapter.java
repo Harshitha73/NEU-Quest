@@ -1,7 +1,6 @@
 package edu.northeastern.numad24su_group9.recycler;
 
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,8 +56,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = events.get(position);
-
-        Log.d("Event image", event.getImage());
 
         EventImageRepository eventImageRepository = new EventImageRepository();
 

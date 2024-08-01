@@ -7,18 +7,16 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import edu.northeastern.numad24su_group9.firebase.AuthConnector;
 
 public class MainActivity extends AppCompatActivity {
 
 
     private long backPressedTime;
     private Toast backToast;
-    private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
 
     @Override
@@ -27,8 +25,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize Firebase Auth
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseUser = AuthConnector.getFirebaseAuth().getCurrentUser();
 
         // Check if user is logged in
         if (firebaseUser != null && firebaseUser.isEmailVerified()) {
@@ -55,11 +52,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Initialize RecyclerView for square buttons
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        String[] buttonTitles = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9"};
-        ButtonAdapter adapter = new ButtonAdapter(this, buttonTitles);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // 3 columns for square buttons
-        recyclerView.setAdapter(adapter);
+//        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+//        String[] buttonTitles = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9"};
+//        ButtonAdapter adapter = new ButtonAdapter(this, buttonTitles);
+//        recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // 3 columns for square buttons
+//        recyclerView.setAdapter(adapter);
     }
 
     @SuppressLint("MissingSuperCall")

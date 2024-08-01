@@ -1,6 +1,7 @@
 package edu.northeastern.numad24su_group9.firebase.repository.storage;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -63,8 +64,11 @@ public class EventImageRepository {
     }
 
     public Uri getEventImage(String event_image) {
+        Log.d("EventImageRepository", "getEventImage 1 : " + event_image);
         Task<Uri> urlTask = eventImageRef.child(event_image).getDownloadUrl();
+        Log.d("EventImageRepository", "getEventImage 2 : " + event_image);
         while (!urlTask.isSuccessful()) ;
+        Log.d("EventImageRepository", "getEventImage 3 : " + event_image);
         return urlTask.getResult();
     }
 }
