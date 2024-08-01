@@ -3,13 +3,9 @@ package edu.northeastern.numad24su_group9;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,12 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import edu.northeastern.numad24su_group9.model.Event;
+import edu.northeastern.numad24su_group9.recycler.EventAdapter;
+import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,12 +40,6 @@ public class RightNowActivity extends AppCompatActivity {
         FloatingActionButton userProfile = findViewById(R.id.user_profile_fab);
         SearchView searchView = findViewById(R.id.searchView);
 
-        // Find the buttons
-        Button rightNowButton = findViewById(R.id.right_now);
-        Button exploreButton = findViewById(R.id.explore);
-        Button registerEventButton = findViewById(R.id.register_event);
-        Button profileButton = findViewById(R.id.profile);
-
         // Set click listeners for the buttons
         registerEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, RegisterEventActivity.class);
@@ -60,7 +48,7 @@ public class RightNowActivity extends AppCompatActivity {
         });
 
         userProfile.setOnClickListener(v -> {
-            startActivity(new Intent(this, UserProfileActivity.class));
+            startActivity(new Intent(this, ProfileActivity.class));
             finish();
         });
 
@@ -111,10 +99,11 @@ public class RightNowActivity extends AppCompatActivity {
         }).addOnFailureListener(Throwable::printStackTrace);
     }
 
-    private void updateUI() {
+    private void updateUI(List<Event> allEvents) {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        EventAdapter eventAdapter = new EventAdapter(eventData);
+        EventAdapter eventAdapter = new EventAdapter();
+        eventAdapter.updateData(allEvents);
         eventAdapter.setOnItemClickListener((event) -> {
             Intent intent = new Intent(RightNowActivity.this, EventDetailsActivity.class);
             intent.putExtra("event", event);

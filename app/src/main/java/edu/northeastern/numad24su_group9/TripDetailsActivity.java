@@ -18,6 +18,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
+import edu.northeastern.numad24su_group9.model.Event;
+import edu.northeastern.numad24su_group9.model.Trip;
+import edu.northeastern.numad24su_group9.recycler.TimelineEventAdapter;
+
 public class TripDetailsActivity extends AppCompatActivity {
 
     private List<Event> events;

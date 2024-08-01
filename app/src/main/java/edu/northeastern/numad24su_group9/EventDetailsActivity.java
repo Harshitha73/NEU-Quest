@@ -79,8 +79,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         Intent intent;
         if ("RightNowActivity".equals(previousActivity)) {
             intent = new Intent(EventDetailsActivity.this, RightNowActivity.class);
-        } else if ("ExploreActivity".equals(previousActivity)) {
-            intent = new Intent(EventDetailsActivity.this, ExploreActivity.class);
         } else {
             super.onBackPressed();
             return;
