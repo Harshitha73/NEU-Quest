@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private Toast backToast;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,13 @@ public class MainActivity extends AppCompatActivity {
             // Start the login activity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         });
+
+        // Initialize RecyclerView for square buttons
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        String[] buttonTitles = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9"};
+        ButtonAdapter adapter = new ButtonAdapter(this, buttonTitles);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // 3 columns for square buttons
+        recyclerView.setAdapter(adapter);
     }
 
     @SuppressLint("MissingSuperCall")

@@ -11,7 +11,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="120dp"
         android:text="Please verify your email"
-        android:textColor="@color/black"
         android:textSize="32sp"
         android:textStyle="bold" />
 
@@ -23,7 +22,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:text="To ensure your account's security, please verify your email. Check your inbox for the verification link."
-        android:textColor="@color/black"
         android:textSize="14sp" />
 
     <Button
@@ -34,7 +32,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="Resend Verification Email"
-        android:textColor="@color/white"
         android:paddingHorizontal="24dp"
         android:paddingVertical="12dp"
         android:textSize="16sp" />

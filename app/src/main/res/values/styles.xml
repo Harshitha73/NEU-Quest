@@ -1,6 +1,10 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.NUMAD24Su_Group9" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/button_color</item>
+        <item name="android:textColor">@color/button_text_color</item>
+    </style>
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/background_color</item>
         <item name="colorPrimaryVariant">@color/background_color</item>
@@ -12,5 +16,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="android:textColor">@color/text_color</item>
     </style>
 </resources>
