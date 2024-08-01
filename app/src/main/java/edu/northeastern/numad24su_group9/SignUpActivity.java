@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
@@ -81,7 +79,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                     .addOnCompleteListener(task1 -> {
                                                         if (task1.isSuccessful()) {
                                                             Toast.makeText(SignUpActivity.this, "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show();
-                                                            String uid = user.getUid();
+                                                            uid = user.getUid();
 
                                                             SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
                                                             SharedPreferences.Editor editor = sharedPreferences.edit();
