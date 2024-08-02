@@ -30,10 +30,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
@@ -53,3 +53,5 @@ dependencies {
     implementation(libs.material.v130alpha02)
     implementation(libs.guava)
 }
+
+apply(plugin = "com.google.gms.google-services")
