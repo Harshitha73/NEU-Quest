@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/background_color"
+    android:padding="24dp">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/searchLayout"
@@ -15,7 +17,10 @@
             android:id="@+id/searchView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="@color/button_color"
+            android:iconifiedByDefault="false"
+            android:layout_marginBottom="8dp"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -23,13 +28,15 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:background="@color/background_color" />
 
     <Button
         android:id="@+id/buttonConfirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/confirm_selection"
-        android:onClick="confirmSelection" />
+        android:onClick="confirmSelection"
+        style="@style/CustomButton" />
 
 </LinearLayout>

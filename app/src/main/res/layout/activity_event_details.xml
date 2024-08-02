@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_color" >
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -44,14 +46,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:textColor="@color/text_color" />
 
                         <TextView
                             android:id="@+id/event_description"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/text_color" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -70,13 +74,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/start_date"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    android:textColor="@color/text_color" />
 
                                 <TextView
                                     android:id="@+id/event_start_date"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    android:textColor="@color/text_color" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -89,13 +95,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/end_date"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    android:textColor="@color/text_color" />
 
                                 <TextView
                                     android:id="@+id/event_end_date"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    android:textColor="@color/text_color" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -116,13 +124,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/start_time"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    android:textColor="@color/text_color" />
 
                                 <TextView
                                     android:id="@+id/event_start_time"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    android:textColor="@color/text_color" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -135,13 +145,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/end_time"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    android:textColor="@color/text_color" />
 
                                 <TextView
                                     android:id="@+id/event_end_time"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    android:textColor="@color/text_color" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -161,13 +173,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/event_price"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    android:textColor="@color/text_color" />
 
                                 <TextView
                                     android:id="@+id/event_price"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    android:textColor="@color/text_color" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -180,13 +194,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/event_location"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    android:textColor="@color/text_color" />
 
                                 <TextView
                                     android:id="@+id/event_location"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    android:textColor="@color/text_color" />
 
                             </LinearLayout>
 
@@ -204,7 +220,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/register"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/CustomButton"
                 tools:ignore="VisualLintButtonSize" />
 
         </LinearLayout>

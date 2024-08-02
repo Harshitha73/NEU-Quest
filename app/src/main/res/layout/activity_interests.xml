@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/light_gray"
+    android:background="@color/background_color"
     android:padding="24dp">
 
     <TextView
@@ -13,7 +13,7 @@
         android:text="@string/select_your_interests"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="@android:color/black" />
+        android:textColor="@color/text_color" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -35,8 +35,8 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
-        android:background="#4CAF50"
         android:text="@string/save"
+        style="@style/CustomButton"
         tools:ignore="VisualLintButtonSize,TextContrastCheck" />
 
 </LinearLayout>

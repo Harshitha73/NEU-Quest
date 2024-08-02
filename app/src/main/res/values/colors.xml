@@ -4,14 +4,5 @@
     <color name="text_color">#202124</color>
     <color name="button_color">#7A5454</color>
     <color name="button_text_color">#FFFFFF</color>
-    <color name="purple_200">#9C27B0</color>
-    <color name="purple_700">#673AB7</color>
-    <color name="black">#020202</color>
-    <color name="teal_200">#00BCD4</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="light_gray">#f1f1f1</color>
-    <color name="primary">#007bff</color>
+    <color name="white">#FFFFFF</color>
 </resources>
-

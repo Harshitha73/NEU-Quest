@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="24dp"
+    android:background="@color/background_color">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +18,8 @@
             android:text="@string/trip_budget"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/text_color" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,7 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/minimumBudget"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/text_color" />
 
             <com.google.android.material.slider.RangeSlider
                 android:id="@+id/budget_range_slider"
@@ -45,7 +48,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/maximumBudget"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/text_color" />
 
         </LinearLayout>
 
@@ -55,6 +59,7 @@
             android:text="@string/budget_includes"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:textColor="@color/text_color"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="16dp" />
 
@@ -69,13 +74,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/meals"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/text_color" />
 
             <CheckBox
                 android:id="@+id/transport_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/transport" />
+                android:text="@string/transport"
+                android:textColor="@color/text_color" />
 
         </LinearLayout>
 
@@ -179,11 +186,12 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/submit_button"
+            style="@style/CustomButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/submit"
-            android:layout_marginTop="24dp" />
+            android:layout_marginTop="12dp"
+            android:text="@string/submit" />
 
     </LinearLayout>
 

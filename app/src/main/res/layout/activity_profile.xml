@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="@color/background_color">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,8 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Name: "
-            android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textColor="@color/text_color"
+            android:textSize="16sp"
             android:paddingBottom="8dp"/>
 
         <TextView
@@ -24,16 +26,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Email: "
-            android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textColor="@color/text_color"
+            android:textSize="16sp"
             android:paddingBottom="8dp"/>
+
         <TextView
             android:id="@+id/profile_interests_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Interests: No interests set"
-            android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textColor="@color/text_color"
+            android:textSize="16sp"
             android:layout_marginTop="16dp"/>
 
         <Button
@@ -41,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Edit Interests"
-            android:textColor="@color/white"
+            style="@style/CustomButton"
             android:layout_marginTop="16dp"/>
 
         <Button
@@ -49,18 +52,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Logout"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="@android:color/holo_blue_light"
-            android:textColor="@android:color/white"/>
+            style="@style/CustomButton"
+            android:layout_marginTop="16dp"/>
 
         <Button
             android:id="@+id/delete_account_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delete your account"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="@android:color/holo_red_light"
-            android:textColor="@android:color/white"/>
+            style="@style/CustomButton"
+            android:layout_marginTop="16dp"/>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -91,7 +92,7 @@
                     android:focusable="true"
                     android:minHeight="48dp"
                     android:text="Change Profile Image"
-                    android:textColor="@color/primary"
+                    android:textColor="@color/text_color"
                     tools:ignore="HardcodedText,TextContrastCheck" />
 
                 <TextView
@@ -100,7 +101,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:textAppearance="?attr/textAppearanceHeadline5"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color" />
 
             </LinearLayout>
 
