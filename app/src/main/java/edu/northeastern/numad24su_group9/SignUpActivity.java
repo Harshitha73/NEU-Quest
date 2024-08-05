@@ -59,7 +59,7 @@ public class SignUpActivity extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
 
         if (!email.endsWith("@northeastern.edu") && !email.endsWith("@husky.neu.edu")) {
-            Toast.makeText(SignUpActivity.this, "We only accept 'northeastern.edu' email ids", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignUpActivity.this, "We only accept 'northeastern.edu' email ids", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -105,7 +105,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     });
                         }
                     } else {
-                        Toast.makeText(SignUpActivity.this, "Sign-up failed: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, "Sign-up failed: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
