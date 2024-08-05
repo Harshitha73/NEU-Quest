@@ -1,5 +1,7 @@
 package edu.northeastern.numad24su_group9.firebase.repository.database;
 
+import android.util.Log;
+
 import com.google.firebase.database.DatabaseReference;
 
 import edu.northeastern.numad24su_group9.firebase.DatabaseConnector;
