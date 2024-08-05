@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
     android:background="@color/background_color">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -13,14 +12,18 @@
         android:layout_margin="16dp"
         android:orientation="horizontal">
 
+        <include
+            layout="@layout/user_profile_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/background_color" />
+
         <SearchView
             android:id="@+id/searchView"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/white"
-            android:iconifiedByDefault="false"
-            android:queryHint="Search" />
+            android:background="@color/white" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
