@@ -36,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
             return; // Exit the method
         }
 
+        // Hide the app title bar
+        getSupportActionBar().hide();
+
+
         // Find the buttons in the layout
         Button signUpButton = findViewById(R.id.signUpButton);
         Button loginButton = findViewById(R.id.loginButton);
