@@ -47,9 +47,11 @@
             android:name=".InterestsActivity"
             android:exported="false" />
         <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".SignUpActivity"
             android:exported="false" />
         <activity
