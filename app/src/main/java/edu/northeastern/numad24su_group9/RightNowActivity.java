@@ -3,6 +3,7 @@ package edu.northeastern.numad24su_group9;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -100,6 +101,7 @@ public class RightNowActivity extends AppCompatActivity {
     }
 
     private void updateUI(List<Event> events) {
+        Log.d("LOGGING RIGHT NOW", "MADE IT TO UDPATE UI");
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventAdapter = new EventAdapter();

@@ -1,5 +1,7 @@
 package edu.northeastern.numad24su_group9;
 
+import static edu.northeastern.numad24su_group9.AppConstants.DEFAULT_EVENT_IMAGE_NAME;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -10,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputFilter;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,6 +40,7 @@ public class RegisterEventActivity extends AppCompatActivity {
     private ImageView imageView;
     private String uid, eventID;
     private Uri imageUri;
+    private Boolean imageUploaded;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -74,6 +78,10 @@ public class RegisterEventActivity extends AppCompatActivity {
         eventEndDateEditText.setOnClickListener(v -> showDatePicker(eventEndDateEditText));
         eventEndTimeEditText.setOnClickListener(v -> showTimePicker(eventEndTimeEditText));
 
+        // Set the image uploaded field to false so the default image loads
+        imageUploaded = false;
+
+        // The launcher runs after the uploaded image activity is done
         launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -84,6 +92,7 @@ public class RegisterEventActivity extends AppCompatActivity {
                         getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         imageView.setImageURI(imageUri);
                         eventImageRepo.uploadEventImage(imageUri, eventID);
+                        imageUploaded = true;
                     }
                 });
 
@@ -112,7 +121,13 @@ public class RegisterEventActivity extends AppCompatActivity {
         event.setEndDate(Objects.requireNonNull(eventEndDateEditText.getText()).toString());
         event.setRegisterLink(eventRegisterLinkEditText.getText().toString());
         event.setCreatedBy(uid);
-        event.setImage(eventID);
+        if(imageUploaded) {
+            event.setImage(eventID);
+        }
+        else {
+            event.setImage(DEFAULT_EVENT_IMAGE_NAME);
+        }
+
 
         EventRepository eventRepository = new EventRepository();
         DatabaseReference eventRef = eventRepository.getEventRef().child(event.getEventID());
