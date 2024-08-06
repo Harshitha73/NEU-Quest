@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:clipChildren="false"
-
         android:orientation="horizontal">
 
         <include
