@@ -3,6 +3,7 @@ package edu.northeastern.numad24su_group9;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,10 +39,11 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         Event event = (Event) getIntent().getSerializableExtra("event");
         previousActivity = getIntent().getStringExtra("previousActivity");
+        Log.d("DETAILS ACTIVITY", event.getTitle());
+
 
 
         // Set the event details in the UI components
-        assert event != null;
         eventNameTextView.setText(event.getTitle());
         eventDescriptionTextView.setText(event.getDescription());
         eventStartDateTextView.setText(event.getStartDate());
