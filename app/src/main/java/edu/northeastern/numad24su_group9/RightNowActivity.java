@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ public class RightNowActivity extends AppCompatActivity {
     private EventAdapter eventAdapter;
     private RecyclerView recyclerView;
     private List<Event> allEvents;
+    private ProgressBar progressBar;
 
     private long backPressedTime;
     private Toast backToast;
@@ -35,6 +38,9 @@ public class RightNowActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_right_now);
+
+        // Find the view for the progress bar
+        progressBar = findViewById(R.id.progressBar);
 
         // Find the buttons
         FloatingActionButton registerEventButton = findViewById(R.id.register_button);
@@ -96,12 +102,13 @@ public class RightNowActivity extends AppCompatActivity {
                     allEvents.add(event);
                 }
                 updateUI(allEvents);
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
             }
         }).addOnFailureListener(Throwable::printStackTrace);
     }
 
     private void updateUI(List<Event> events) {
-        Log.d("LOGGING RIGHT NOW", "MADE IT TO UDPATE UI");
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventAdapter = new EventAdapter();
