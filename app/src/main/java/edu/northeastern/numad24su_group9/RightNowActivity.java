@@ -2,9 +2,11 @@ package edu.northeastern.numad24su_group9;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -45,7 +47,7 @@ public class RightNowActivity extends AppCompatActivity {
         // Find the buttons
         FloatingActionButton registerEventButton = findViewById(R.id.register_button);
         FloatingActionButton userProfile = findViewById(R.id.user_profile_fab);
-        SearchView searchView = findViewById(R.id.searchView);
+        SearchView searchView = findViewById(R.id.RightNowSearchView);
 
         // Set click listeners for the buttons
         registerEventButton.setOnClickListener(v -> {
