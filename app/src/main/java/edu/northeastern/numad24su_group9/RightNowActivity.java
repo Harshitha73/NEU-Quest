@@ -59,6 +59,9 @@ public class RightNowActivity extends AppCompatActivity {
             finish();
         });
 
+        // Set click listener for the whole SearchView
+        searchView.setOnClickListener(v -> searchView.setIconified(false));
+
         // Set up the search functionality
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
