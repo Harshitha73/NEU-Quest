@@ -1,9 +1,12 @@
 package edu.northeastern.numad24su_group9;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,11 +42,11 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         Event event = (Event) getIntent().getSerializableExtra("event");
         previousActivity = getIntent().getStringExtra("previousActivity");
-        Log.d("DETAILS ACTIVITY", event.getTitle());
 
 
 
         // Set the event details in the UI components
+        assert event != null;
         eventNameTextView.setText(event.getTitle());
         eventDescriptionTextView.setText(event.getDescription());
         eventStartDateTextView.setText(event.getStartDate());
@@ -72,9 +75,29 @@ public class EventDetailsActivity extends AppCompatActivity {
         registerButton.setOnClickListener(v -> {
             // Launch the browser or an in-app registration flow with the registerUrl
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(event.getRegisterLink()));
-            startActivity(intent);
-            finish();
+            try {
+                startActivity(intent);
+                finish();
+            }
+            catch(Exception e) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Registration URL Error")
+                        .setMessage("There is an error with the registration link: " + e)
+                        .setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Handle OK button click
+                                dialog.dismiss();
+                            }
+                        })
+                        .create()
+                        .show();
+            }
         });
+
+        if(event.getRegisterLink() == null) {
+            registerButton.setVisibility(View.INVISIBLE);
+        }
     }
     @Override
     public void onBackPressed() {

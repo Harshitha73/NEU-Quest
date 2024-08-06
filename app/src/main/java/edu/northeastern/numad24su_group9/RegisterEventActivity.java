@@ -119,7 +119,7 @@ public class RegisterEventActivity extends AppCompatActivity {
         event.setEndTime(Objects.requireNonNull(eventEndTimeEditText.getText()).toString());
         event.setStartDate(Objects.requireNonNull(eventStartDateEditText.getText()).toString());
         event.setEndDate(Objects.requireNonNull(eventEndDateEditText.getText()).toString());
-        event.setRegisterLink(eventRegisterLinkEditText.getText().toString());
+        event.setRegisterLink(createValidURL(eventRegisterLinkEditText.getText().toString()));
         event.setCreatedBy(uid);
         if(imageUploaded) {
             event.setImage(eventID);
@@ -210,5 +210,24 @@ public class RegisterEventActivity extends AppCompatActivity {
         Intent intent = new Intent(RegisterEventActivity.this, RightNowActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private String createValidURL(String originalURL) {
+        if (originalURL != null) {
+            if(originalURL.isEmpty()) {
+                return(null);
+            }
+            // Check if the URL starts with "https://www."
+            else if (originalURL.length() >= 12 && originalURL.startsWith("https://www.") || originalURL.startsWith("http://www.")) {
+                // Valid URL prefix
+                return originalURL;
+            } else if (originalURL.startsWith("www.")) {
+                return ("https://" + originalURL);
+            } else {
+                Log.d("NEW URL", "https://www." + originalURL);
+                return ("https://www." + originalURL);
+            }
+        }
+        return null;
     }
 }
