@@ -1,8 +1,10 @@
 package edu.northeastern.numad24su_group9;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,8 +16,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DatabaseReference;
 import com.squareup.picasso.Picasso;
 
+import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
 import edu.northeastern.numad24su_group9.model.Event;
 
@@ -73,6 +77,16 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Set the register button click listener
         registerButton.setOnClickListener(v -> {
+            // User likes this event. Save it in the database
+            SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+            String uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
+
+            UserRepository userRepository = new UserRepository(uid);
+            DatabaseReference userRef = userRepository.getUserRef();
+            DatabaseReference userEventAttendedRef = userRef.child("eventsAttended").push();
+            userEventAttendedRef.setValue(event.getEventID());
+
+
             // Launch the browser or an in-app registration flow with the registerUrl
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(event.getRegisterLink()));
             try {

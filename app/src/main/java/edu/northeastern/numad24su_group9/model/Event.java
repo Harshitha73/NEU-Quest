@@ -1,5 +1,7 @@
 package edu.northeastern.numad24su_group9.model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class Event implements Serializable {
@@ -112,6 +114,12 @@ public class Event implements Serializable {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Title: " + title + "Description: " + description + "Image: " + image + "Start Time: " + startTime + "End Time: " + endTime + "Start Date: " + startDate + "End Date: " + endDate + "Price: " + price + "Location: " + location;
     }
 }
 
