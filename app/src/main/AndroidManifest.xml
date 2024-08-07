@@ -42,6 +42,8 @@
             android:exported="false" />
         <activity
             android:name=".RightNowActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="unspecified"
             android:exported="false" />
         <activity
             android:name=".InterestsActivity"

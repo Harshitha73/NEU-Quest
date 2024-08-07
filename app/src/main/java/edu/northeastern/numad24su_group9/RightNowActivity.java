@@ -109,8 +109,15 @@ public class RightNowActivity extends AppCompatActivity {
                 }
             });
         }
-
-        getEvents();
+        if (savedInstanceState != null) {
+            allEvents = (List<Event>) savedInstanceState.getSerializable("allEvents");
+            backPressedTime = savedInstanceState.getLong("backPressedTime");
+            updateUI(allEvents);
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        } else {
+            getEvents();
+        }
     }
 
     public void getEvents() {
@@ -180,5 +187,24 @@ public class RightNowActivity extends AppCompatActivity {
             backToast.show();
         }
         backPressedTime = System.currentTimeMillis();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save any necessary data
+        outState.putSerializable("allEvents", new ArrayList<>(allEvents));
+        outState.putLong("backPressedTime", backPressedTime);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore the saved data
+        if (savedInstanceState != null) {
+            allEvents = (List<Event>) savedInstanceState.getSerializable("allEvents");
+            backPressedTime = savedInstanceState.getLong("backPressedTime");
+            updateUI(allEvents); // Make sure to update the UI with restored data
+        }
     }
 }
