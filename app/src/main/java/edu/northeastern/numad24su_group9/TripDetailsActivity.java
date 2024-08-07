@@ -34,9 +34,25 @@ public class TripDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_details);
 
-        trip = (Trip) getIntent().getSerializableExtra("trip");
+        Intent intent = getIntent();
+        if (intent == null) {
+            Log.e("TripDetailsActivity", "Intent is null");
+            finish();
+            return;
+        }
 
-        // Fetch the events of the trip
+        trip = (Trip) intent.getSerializableExtra("trip");
+        Log.d("TripDetailsActivity", "Trip object from Intent: " + trip);
+
+        // Check if the trip is null
+        if (trip == null) {
+            Log.e("TripDetailsActivity", "Trip object is null");
+            finish();
+            return;
+        }
+
+        String title = trip.getTitle();
+
         getEvents();
 
         TextView tripNameTextView = findViewById(R.id.trip_name);
@@ -47,6 +63,7 @@ public class TripDetailsActivity extends AppCompatActivity {
         tripNameTextView.setText(trip.getTitle());
         tripTimeTextView.setText(getCurrentTimeString(Long.parseLong(trip.getTripID())));
         tripBudgetTextView.setText("Budget from $" + trip.getMinBudget() + " - $" + trip.getMaxBudget());
+
         boolean mealsIncluded = Boolean.parseBoolean(trip.getMealsIncluded());
         boolean transportIncluded = Boolean.parseBoolean(trip.getTransportIncluded());
 
@@ -68,7 +85,6 @@ public class TripDetailsActivity extends AppCompatActivity {
     }
 
     public void getEvents() {
-
         EventRepository eventRepository = new EventRepository();
         events = new ArrayList<>();
 
@@ -103,11 +119,11 @@ public class TripDetailsActivity extends AppCompatActivity {
                 recyclerView.setAdapter(eventAdapter);
             }
         }).addOnFailureListener(e -> {
-            // Handle any exceptions that occur during the database query
             Log.e("EventRepository", "Error retrieving event data: " + e.getMessage());
         });
     }
 
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(TripDetailsActivity.this, ProfileActivity.class);

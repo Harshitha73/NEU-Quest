@@ -12,18 +12,16 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DatabaseReference;
-
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
@@ -31,7 +29,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.gemini.GeminiClient;
 import edu.northeastern.numad24su_group9.model.Trip;
@@ -43,7 +40,6 @@ public class PlanningTripActivity extends AppCompatActivity {
     private TextInputEditText eventStartTimeEditText, eventEndTimeEditText, eventStartDateEditText, eventEndDateEditText;
     private CheckBox mealsCheckbox, transportCheckbox;
     private Button submitButton;
-
     private String uid;
 
     @Override
@@ -57,6 +53,22 @@ public class PlanningTripActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
         uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
+
+        // Set up Bottom Navigation
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                startActivity(new Intent(PlanningTripActivity.this, RightNowActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_budget) {
+                return true; // Already in the PlanningTripActivity
+            } else if (itemId == R.id.navigation_profile) {
+                startActivity(new Intent(PlanningTripActivity.this, ProfileActivity.class));
+                return true;
+            }
+            return false;
+        });
     }
 
     private void bindViews() {
@@ -141,7 +153,6 @@ public class PlanningTripActivity extends AppCompatActivity {
 
     private void setupSubmitButton() {
         submitButton.setOnClickListener(v -> {
-            // Handle submit button click
             Trip trip = new Trip();
 
             // Create a ThreadPoolExecutor
@@ -149,7 +160,7 @@ public class PlanningTripActivity extends AppCompatActivity {
             ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(numThreads);
 
             GeminiClient geminiClient = new GeminiClient();
-            ListenableFuture<GenerateContentResponse> response = geminiClient.generateResult("Give me just one trip name for a trip starting on " + trip.getStartDate() + " to " + trip.getLocation());
+            ListenableFuture<GenerateContentResponse> response = geminiClient.generateResult("Give me just one trip name for a trip starting on " + Objects.requireNonNull(eventStartDateEditText.getText()).toString() + " to " + Objects.requireNonNull(eventLocationEditText.getText()).toString());
 
             // Generate trip name using Gemini API
             Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
@@ -159,18 +170,17 @@ public class PlanningTripActivity extends AppCompatActivity {
                     Log.e("TripAdapter", "Success");
                     Pattern pattern = Pattern.compile("\\*\\*(.+?)\\*\\*");
                     Matcher matcher = pattern.matcher(result.getText());
-                    if(matcher.find()) {
+                    if (matcher.find()) {
                         trip.setTitle(matcher.group(1));
-
                         trip.setMinBudget(String.valueOf(budgetRangeSlider.getValues().get(0)));
                         trip.setMaxBudget(String.valueOf(budgetRangeSlider.getValues().get(1)));
                         trip.setMealsIncluded(String.valueOf(mealsCheckbox.isChecked()));
                         trip.setTransportIncluded(String.valueOf(transportCheckbox.isChecked()));
                         trip.setLocation(eventLocationEditText.getText().toString());
-                        trip.setStartDate(Objects.requireNonNull(eventStartTimeEditText.getText()).toString());
-                        trip.setEndTime(Objects.requireNonNull(eventEndTimeEditText.getText()).toString());
-                        trip.setStartDate(Objects.requireNonNull(eventStartDateEditText.getText()).toString());
-                        trip.setEndDate(Objects.requireNonNull(eventEndDateEditText.getText()).toString());
+                        trip.setStartDate(eventStartDateEditText.getText().toString());
+                        trip.setEndDate(eventEndDateEditText.getText().toString());
+                        trip.setStartTime(eventStartTimeEditText.getText().toString());
+                        trip.setEndTime(eventEndTimeEditText.getText().toString());
                         trip.setTripID(String.valueOf(System.currentTimeMillis()));
 
                         // Get a reference to the user's data in the database
@@ -178,6 +188,7 @@ public class PlanningTripActivity extends AppCompatActivity {
                         DatabaseReference userRef = userRepository.getUserRef();
                         DatabaseReference userItineraryRef = userRef.child("itinerary").push();
                         userItineraryRef.setValue(trip.getTripID());
+
                         Intent intent = new Intent(PlanningTripActivity.this, AddEventsActivity.class);
                         intent.putExtra("trip", trip);
                         startActivity(intent);

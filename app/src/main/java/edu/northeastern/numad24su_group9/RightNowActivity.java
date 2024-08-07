@@ -2,20 +2,21 @@ package edu.northeastern.numad24su_group9;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 
@@ -32,6 +33,8 @@ public class RightNowActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<Event> allEvents;
     private ProgressBar progressBar;
+    private FloatingActionButton registerEventButton;
+    private FloatingActionButton myFab;
 
     private long backPressedTime;
     private Toast backToast;
@@ -41,54 +44,97 @@ public class RightNowActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_right_now);
 
-        // Find the view for the progress bar
+        // Find the views
         progressBar = findViewById(R.id.progressBar);
-
-        // Find the buttons
-        FloatingActionButton registerEventButton = findViewById(R.id.register_button);
-        FloatingActionButton userProfile = findViewById(R.id.user_profile_fab);
+        registerEventButton = findViewById(R.id.register_button);
+        myFab = findViewById(R.id.my_fab); // Initialize the FloatingActionButton
         SearchView searchView = findViewById(R.id.RightNowSearchView);
 
+        if (progressBar == null) {
+            Log.e("RightNowActivity", "progressBar is null");
+        }
+        if (registerEventButton == null) {
+            Log.e("RightNowActivity", "registerEventButton is null");
+        }
+        if (myFab == null) {
+            Log.e("RightNowActivity", "myFab is null");
+        }
+        if (searchView == null) {
+            Log.e("RightNowActivity", "searchView is null");
+        }
+
+        // Set up Bottom Navigation
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView == null) {
+            Log.e("RightNowActivity", "bottomNavigationView is null");
+        } else {
+            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.navigation_home) {
+                        startActivity(new Intent(RightNowActivity.this, RightNowActivity.class));
+                        return true;
+                    } else if (itemId == R.id.navigation_budget) {
+                        startActivity(new Intent(RightNowActivity.this, PlanningTripActivity.class));
+                        return true;
+                    } else if (itemId == R.id.navigation_profile) {
+                        startActivity(new Intent(RightNowActivity.this, ProfileActivity.class));
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
+
         // Set click listeners for the buttons
-        registerEventButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, RegisterEventActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        if (registerEventButton != null) {
+            registerEventButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, RegisterEventActivity.class);
+                startActivity(intent);
+                finish();
+            });
+        }
 
-        userProfile.setOnClickListener(v -> {
-            startActivity(new Intent(this, ProfileActivity.class));
-            finish();
-        });
+        if (searchView != null) {
+            searchView.setOnClickListener(v -> searchView.setIconified(false));
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    filterEvents(query);
+                    return true;
+                }
 
-        // Set click listener for the whole SearchView
-        searchView.setOnClickListener(v -> searchView.setIconified(false));
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    filterEvents(newText);
+                    return true;
+                }
+            });
+        }
 
-        // Set up the search functionality
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                filterEvents(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                filterEvents(newText);
-                return true;
-            }
-        });
+        // Setup FloatingActionButton click listener
+        if (myFab != null) {
+            myFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Handle the click event
+                    Toast.makeText(RightNowActivity.this, "FAB clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // Handle the case where myFab is null
+            Toast.makeText(this, "FloatingActionButton is null", Toast.LENGTH_SHORT).show();
+        }
 
         getEvents();
     }
 
     public void getEvents() {
         allEvents = new ArrayList<>();
-
         EventRepository eventRepository = new EventRepository();
 
         Task<DataSnapshot> task = eventRepository.getEventRef().get();
-        // Handle any exceptions that occur during the database query
         task.addOnSuccessListener(dataSnapshot -> {
             if (dataSnapshot.exists()) {
                 for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
@@ -129,7 +175,6 @@ public class RightNowActivity extends AppCompatActivity {
     }
 
     private void filterEvents(String query) {
-        // Implement your logic to filter the event items based on the search query
         List<Event> filteredEvents = new ArrayList<>();
         for (Event event : allEvents) {
             if (event.getTitle().toLowerCase().contains(query.toLowerCase()) ||

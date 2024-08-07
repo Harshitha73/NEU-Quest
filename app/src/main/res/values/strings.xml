@@ -44,4 +44,7 @@
     <string name="planned_trips">Planned Trips</string>
     <string name="show_location">Show Location</string>
     <string name="user_profile">User profile</string>
+    <string name="title_home">Home</string>
+    <string name="title_budget">Budget</string>
+    <string name="title_profile">Profile</string>
 </resources>

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
@@ -138,6 +139,22 @@ public class ProfileActivity extends AppCompatActivity {
             emailTextView.setText("Email: " + email);
             loadUserInterests();
         }
+
+        // Set up BottomNavigationView
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                startActivity(new Intent(ProfileActivity.this, RightNowActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_budget) {
+                startActivity(new Intent(ProfileActivity.this, PlanningTripActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                return true;
+            }
+            return false;
+        });
     }
 
     // Method to launch the image picker
@@ -154,7 +171,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void getUser(String uid) {
-
         user = new User();
         user.setUserID(uid);
 
@@ -178,7 +194,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void updateUI() {
-
         assert user != null;
         userNameTextView.setText(user.getName());
 
@@ -190,17 +205,13 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-
     public void getTrips() {
-
         TripRepository tripRepository = new TripRepository();
         trips = new ArrayList<>();
 
         Task<DataSnapshot> task = tripRepository.getTripRef().get();
-        // Handle any exceptions that occur during the database query
         task.addOnSuccessListener(dataSnapshot -> {
             if (dataSnapshot.exists()) {
-
                 for (String tripID : user.getTrips()) {
                     Trip trip = new Trip();
                     trip.setTripID(tripID);
@@ -311,6 +322,7 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
     }
+
     @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
