@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -33,6 +35,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +45,8 @@ import edu.northeastern.numad24su_group9.firebase.repository.storage.UserProfile
 import edu.northeastern.numad24su_group9.model.Trip;
 import edu.northeastern.numad24su_group9.model.User;
 import edu.northeastern.numad24su_group9.recycler.TripAdapter;
+import android.provider.MediaStore;
+
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -59,6 +64,10 @@ public class ProfileActivity extends AppCompatActivity {
     private UserProfileRepository userProfileRepo;
     private TextView userNameTextView;
     private List<Trip> trips;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int CAMERA_REQUEST = 2;
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Set up the click listener on the user's profile image view
         userProfileImage = findViewById(R.id.user_profile_image);
-        userProfileImage.setOnClickListener(v -> pickImage());
+        userProfileImage.setOnClickListener(v -> showImageSourceDialog());
 
         // Get the current user's ID
         SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
@@ -84,7 +93,7 @@ public class ProfileActivity extends AppCompatActivity {
         TextView changeProfileImageTextView = findViewById(R.id.change_profile_image);
 
         // Set the click listener on the "Change Profile Image" TextView
-        changeProfileImageTextView.setOnClickListener(v -> pickImage());
+        changeProfileImageTextView.setOnClickListener(v -> showImageSourceDialog());
 
         getUser(uid);
 
@@ -95,23 +104,34 @@ public class ProfileActivity extends AppCompatActivity {
             finish();
         });
 
-        launcher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK ) {
-                        // There are no request codes
-                        Intent data = result.getData();
-                        assert data != null;
-                        imageUri = data.getData();
-                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        Picasso.get().load(imageUri).into(userProfileImage);
-                        userProfileRepo.uploadProfileImage(imageUri, uid);
+        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null && data.getExtras() != null) {
+                    Bitmap photo = (Bitmap) data.getExtras().get("data");
+                    imageUri = getImageUri(this, photo);
+                    Picasso.get().load(imageUri).into(userProfileImage);
+                    userProfileRepo.uploadProfileImage(imageUri, uid);
 
+                    DatabaseReference userRef = userRepository.getUserRef();
+                    userRef.child("profileImage").setValue(uid);
+                }
+                else if (data != null) {
+                    Uri selectedImageUri = data.getData();
+                    if (selectedImageUri != null) {
+                        // Load the selected image into the ImageView
+                        Picasso.get().load(selectedImageUri).into(userProfileImage);
+
+                        // Update the profile image in Firebase
+                        userProfileRepo.uploadProfileImage(selectedImageUri, uid);
+
+                        // Update the profile image reference in the database
                         DatabaseReference userRef = userRepository.getUserRef();
                         userRef.child("profileImage").setValue(uid);
                     }
                 }
-        );
+            }
+        });
 
         nameTextView = findViewById(R.id.profile_name_text_view);
         emailTextView = findViewById(R.id.profile_email_text_view);
@@ -157,17 +177,76 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Method to launch the image picker
-    @SuppressLint("IntentReset")
-    private void pickImage() {
-        // Create an intent to open the file picker
+    private void showImageSourceDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Select Image Source")
+                .setItems(new CharSequence[]{"Camera", "Gallery"}, (dialog, which) -> {
+                    switch (which) {
+                        case 0: // Camera
+                            dispatchTakePictureIntent();
+                            break;
+                        case 1: // Gallery
+                            pickImageFromGallery();
+                            break;
+                    }
+                })
+                .show();
+    }
+    private void dispatchTakePictureIntent() {
+        if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+            }
+        } else {
+            // Request camera permission
+            requestPermissions(new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakePictureIntent();
+            } else {
+                Toast.makeText(this, "Camera permission is required to take pictures.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void pickImageFromGallery() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*"); // This allows the user to select files of any type
+        intent.setType("image/*");
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         launcher.launch(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            if (data != null && data.getExtras() != null) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                imageUri = getImageUri(this, photo);
+                Picasso.get().load(imageUri).into(userProfileImage);
+                userProfileRepo.uploadProfileImage(imageUri, uid);
+
+                DatabaseReference userRef = userRepository.getUserRef();
+                userRef.child("profileImage").setValue(uid);
+            }
+        }
+    }
+
+    private Uri getImageUri(Context context, Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
+        return Uri.parse(path);
     }
 
     public void getUser(String uid) {
