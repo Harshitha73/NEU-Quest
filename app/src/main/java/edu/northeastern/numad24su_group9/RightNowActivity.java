@@ -234,6 +234,13 @@ public class RightNowActivity extends AppCompatActivity {
                         }
                     }
                 }
+
+                for (Event event : allEvents) {
+                    if (!(recommendedEvents.contains(event))) {
+                        recommendedEvents.add(event);
+                    }
+                }
+
                 runOnUiThread(() -> {
                     Log.e("RecommendationAlgorithm", "Recommended events: " + recommendedEvents.toString() + "");
                     progressBar.setVisibility(View.GONE);
