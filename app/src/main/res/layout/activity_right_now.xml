@@ -54,7 +54,7 @@
             android:padding="16dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/my_fab"
+            android:id="@+id/register_event_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

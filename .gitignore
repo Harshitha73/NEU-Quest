@@ -31,3 +31,4 @@ google-services.json
 
 # Android Profiling
 *.hprof
+app/src/main/java/edu/northeastern/numad24su_group9/gemini/GeminiClient.java

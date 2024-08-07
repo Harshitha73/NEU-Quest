@@ -34,7 +34,6 @@ public class RightNowActivity extends AppCompatActivity {
     private List<Event> allEvents;
     private ProgressBar progressBar;
     private FloatingActionButton registerEventButton;
-    private FloatingActionButton myFab;
 
     private long backPressedTime;
     private Toast backToast;
@@ -46,19 +45,17 @@ public class RightNowActivity extends AppCompatActivity {
 
         // Find the views
         progressBar = findViewById(R.id.progressBar);
-        registerEventButton = findViewById(R.id.register_button);
-        myFab = findViewById(R.id.my_fab); // Initialize the FloatingActionButton
+        registerEventButton = findViewById(R.id.register_event_button); // Initialize the FloatingActionButton
         SearchView searchView = findViewById(R.id.RightNowSearchView);
 
         if (progressBar == null) {
             Log.e("RightNowActivity", "progressBar is null");
         }
-        if (registerEventButton == null) {
-            Log.e("RightNowActivity", "registerEventButton is null");
-        }
-        if (myFab == null) {
-            Log.e("RightNowActivity", "myFab is null");
-        }
+        registerEventButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RegisterEventActivity.class);
+            startActivity(intent);
+            finish();
+        });
         if (searchView == null) {
             Log.e("RightNowActivity", "searchView is null");
         }
@@ -111,20 +108,6 @@ public class RightNowActivity extends AppCompatActivity {
                     return true;
                 }
             });
-        }
-
-        // Setup FloatingActionButton click listener
-        if (myFab != null) {
-            myFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Handle the click event
-                    Toast.makeText(RightNowActivity.this, "FAB clicked", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            // Handle the case where myFab is null
-            Toast.makeText(this, "FloatingActionButton is null", Toast.LENGTH_SHORT).show();
         }
 
         getEvents();
