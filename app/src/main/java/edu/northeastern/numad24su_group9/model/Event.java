@@ -3,6 +3,8 @@ package edu.northeastern.numad24su_group9.model;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Event implements Serializable {
     private String title;
@@ -114,6 +116,21 @@ public class Event implements Serializable {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public boolean isWithinDateRange(String startDate, String endDate) {
+
+        // Parse the date strings into LocalDate objects
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate eventDate = LocalDate.parse(this.startDate, formatter);
+        LocalDate tripStartDate = LocalDate.parse(startDate, formatter);
+        LocalDate tripEndDate = LocalDate.parse(endDate, formatter);
+
+        // Compare the dates
+        int resultAfterOrEqualStart = eventDate.compareTo(tripStartDate);
+        int resultAfterOrEqualEnd = eventDate.compareTo(tripEndDate);
+
+        return (resultAfterOrEqualStart >= 0) && (resultAfterOrEqualEnd <= 0);
     }
 
     @NonNull

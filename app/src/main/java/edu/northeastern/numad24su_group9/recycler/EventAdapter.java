@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -64,8 +65,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.descriptionTextView.setText(event.getDescription());
         holder.itemView.setOnClickListener(v -> handleEventClick(event));
         holder.itemView.setOnLongClickListener(v -> {
-            v.setBackgroundColor(Color.YELLOW);
+            v.setSelected(!v.isSelected());
             handleEventSelect(event);
+            // Show the selected item in some way, e.g., change the background color or display it in a separate view
+            if (v.isSelected()) {
+                v.findViewById(R.id.selection_indicator).setVisibility(View.VISIBLE);
+            } else {
+                v.findViewById(R.id.selection_indicator).setVisibility(View.GONE);
+            }
             return true;
         });
     }

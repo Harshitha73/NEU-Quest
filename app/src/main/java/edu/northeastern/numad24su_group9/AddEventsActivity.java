@@ -14,6 +14,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,9 +122,16 @@ public class AddEventsActivity extends AppCompatActivity {
                     event.setPrice(eventSnapshot.child("price").getValue(String.class));
                     event.setLocation(eventSnapshot.child("location").getValue(String.class));
                     event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
-                    eventData.add(event);
+
+                    if (event.isWithinDateRange(trip.getStartDate(), trip.getEndDate()) && event.getLocation().equals(trip.getLocation())) {
+                        eventData.add(event);
+                    }
                 }
-                updateUI(eventData);
+                if (!(eventData.isEmpty())) {
+                    updateUI(eventData);
+                } else {
+                    Toast.makeText(this, "No events found", Toast.LENGTH_SHORT).show();
+                }
             }
         }).addOnFailureListener(Throwable::printStackTrace);
     }

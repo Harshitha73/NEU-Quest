@@ -26,6 +26,13 @@
             android:orientation="horizontal"
             android:padding="16dp">
 
+            <View
+                android:id="@+id/selection_indicator"
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/selected_item_color"
+                android:visibility="gone" />
+
             <ImageView
                 android:id="@+id/event_image"
                 android:layout_width="80dp"
