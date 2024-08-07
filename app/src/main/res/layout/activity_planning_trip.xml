@@ -113,7 +113,8 @@
                         android:focusable="false"
                         android:clickable="true"
                         android:textColorHint="#546E7A"
-                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
+                        android:background="@color/white"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -132,7 +133,8 @@
                         android:focusable="false"
                         android:clickable="true"
                         android:textColorHint="#546E7A"
-                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
+                        android:background="@color/white"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -150,7 +152,8 @@
                         android:inputType="none"
                         android:focusable="false"
                         android:clickable="true"
-                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
+                        android:background="@color/white"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -168,7 +171,8 @@
                         android:inputType="none"
                         android:focusable="false"
                         android:clickable="true"
-                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
+                        android:background="@color/white"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -184,7 +188,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="text"
-                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize,TouchTargetSizeCheck" />
+                        tools:ignore="TextContrastCheck,VisualLintTextFieldSize,TouchTargetSizeCheck"
+                        android:background="@color/white"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 

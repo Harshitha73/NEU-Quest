@@ -224,6 +224,50 @@
                 style="@style/CustomButton"
                 tools:ignore="VisualLintButtonSize" />
 
+            <!-- Comments Section -->
+            <TextView
+                android:id="@+id/comments_section_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/comments_section"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textStyle="bold"
+                android:textColor="@color/text_color" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/comments_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:nestedScrollingEnabled="false" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/comment_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/add_comment"
+                    android:background="@color/button_color"
+                    android:padding="8dp"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/hint_color" />
+
+                <Button
+                    android:id="@+id/post_comment_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Post"
+                    style="@style/CustomButton" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
