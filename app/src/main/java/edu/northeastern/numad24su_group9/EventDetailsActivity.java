@@ -13,10 +13,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
@@ -74,45 +78,66 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Load the event image
         EventImageRepository eventImageRepository = new EventImageRepository();
         Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(eventImageView);
+        SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        String uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
+
+        UserRepository userRepository = new UserRepository(uid);
+        DatabaseReference userEventAttendedRef = userRepository.getUserRef().child("eventsAttended");
+
+        // Check if registration link is valid
+        if (event.getRegisterLink() == null) {
+            registerButton.setVisibility(View.INVISIBLE);
+        } else {
+            // If event already attended by user, don't show register button
+            userEventAttendedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    boolean valueExists = false;
+                    for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                        if (childSnapshot.getValue(String.class).equals(event.getEventID())) {
+                            valueExists = true;
+                            break;
+                        }
+                    }
+
+                    if (valueExists) {
+                        registerButton.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("EventDetailsActivity", "Error with registration: " + error.getMessage());
+                }
+            });
+        }
 
         // Set the register button click listener
         registerButton.setOnClickListener(v -> {
-            // User likes this event. Save it in the database
-            SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-            String uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
-
-            UserRepository userRepository = new UserRepository(uid);
-            DatabaseReference userRef = userRepository.getUserRef();
-            DatabaseReference userEventAttendedRef = userRef.child("eventsAttended").push();
-            userEventAttendedRef.setValue(event.getEventID());
-
-
             // Launch the browser or an in-app registration flow with the registerUrl
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(event.getRegisterLink()));
             try {
+                // User likes this event. Save it in the database
+                userEventAttendedRef.push().setValue(event.getEventID());
                 startActivity(intent);
                 finish();
-            }
-            catch(Exception e) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            } catch (Exception e) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
                 builder.setTitle("Registration URL Error")
-                        .setMessage("There is an error with the registration link: " + e)
-                        .setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // Handle OK button click
-                                dialog.dismiss();
-                            }
-                        })
-                        .create()
-                        .show();
+                .setMessage("There is an error with the registration link: " + e)
+                .setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Handle OK button click
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show();
             }
         });
-
-        if(event.getRegisterLink() == null) {
-            registerButton.setVisibility(View.INVISIBLE);
-        }
     }
+
     @Override
     public void onBackPressed() {
         Intent intent;
