@@ -1,5 +1,6 @@
 package edu.northeastern.numad24su_group9.recycler;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +30,10 @@ public class TimelineEventAdapter extends RecyclerView.Adapter<TimelineEventAdap
 
     @NonNull
     @Override
-    public TimelineEventAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_timeline_event, parent, false);
-        return new TimelineEventAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     public interface OnItemClickListener {
@@ -44,8 +45,9 @@ public class TimelineEventAdapter extends RecyclerView.Adapter<TimelineEventAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TimelineEventAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = events.get(position);
+        Log.d("TimelineEventAdapter", "Event: " + event);
         EventImageRepository eventImageRepository = new EventImageRepository();
 
         Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(holder.imageView);

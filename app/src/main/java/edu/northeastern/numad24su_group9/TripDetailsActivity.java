@@ -25,7 +25,9 @@ import edu.northeastern.numad24su_group9.recycler.TimelineEventAdapter;
 
 public class TripDetailsActivity extends AppCompatActivity {
 
-    private List<Event> events;
+    private RecyclerView recyclerView;
+    private List<Event> allEvents;
+    private TimelineEventAdapter eventAdapter;
     private Trip trip;
 
     @SuppressLint("SetTextI18n")
@@ -33,6 +35,8 @@ public class TripDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_details);
+
+        recyclerView = findViewById(R.id.recycler_view);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -50,10 +54,6 @@ public class TripDetailsActivity extends AppCompatActivity {
             finish();
             return;
         }
-
-        String title = trip.getTitle();
-
-        getEvents();
 
         TextView tripNameTextView = findViewById(R.id.trip_name);
         TextView tripBudgetTextView = findViewById(R.id.trip_budget);
@@ -76,6 +76,8 @@ public class TripDetailsActivity extends AppCompatActivity {
         } else if (!mealsIncluded && !transportIncluded) {
             tripPreferencesTextView.setText("Budget only for the trip. No meals or transportation included");
         }
+
+        getEvents();
     }
 
     private static String getCurrentTimeString(long millis) {
@@ -85,42 +87,48 @@ public class TripDetailsActivity extends AppCompatActivity {
     }
 
     public void getEvents() {
+        allEvents = new ArrayList<>();
         EventRepository eventRepository = new EventRepository();
-        events = new ArrayList<>();
 
         Task<DataSnapshot> task = eventRepository.getEventRef().get();
         task.addOnSuccessListener(dataSnapshot -> {
             if (dataSnapshot.exists()) {
-                for(String eventID : trip.getEventIDs()) {
+                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
                     Event event = new Event();
-                    event.setTitle(dataSnapshot.child(eventID).child("title").getValue(String.class));
-                    event.setImage(dataSnapshot.child(eventID).child("image").getValue(String.class));
-                    event.setDescription(dataSnapshot.child(eventID).child("description").getValue(String.class));
-                    event.setStartTime(dataSnapshot.child(eventID).child("startTime").getValue(String.class));
-                    event.setStartDate(dataSnapshot.child(eventID).child("startDate").getValue(String.class));
-                    event.setEndTime(dataSnapshot.child(eventID).child("endTime").getValue(String.class));
-                    event.setEndDate(dataSnapshot.child(eventID).child("endDate").getValue(String.class));
-                    event.setPrice(dataSnapshot.child(eventID).child("price").getValue(String.class));
-                    event.setLocation(dataSnapshot.child(eventID).child("location").getValue(String.class));
-                    event.setRegisterLink(dataSnapshot.child(eventID).child("registerLink").getValue(String.class));
-                    events.add(event);
+                    event.setEventID(eventSnapshot.getKey());
+                    event.setTitle(eventSnapshot.child("title").getValue(String.class));
+                    event.setImage(eventSnapshot.child("image").getValue(String.class));
+                    event.setDescription(eventSnapshot.child("description").getValue(String.class));
+                    event.setStartTime(eventSnapshot.child("startTime").getValue(String.class));
+                    event.setStartDate(eventSnapshot.child("startDate").getValue(String.class));
+                    event.setEndTime(eventSnapshot.child("endTime").getValue(String.class));
+                    event.setEndDate(eventSnapshot.child("endDate").getValue(String.class));
+                    event.setPrice(eventSnapshot.child("price").getValue(String.class));
+                    event.setLocation(eventSnapshot.child("location").getValue(String.class));
+                    event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
+                    if(trip.getEventIDs().contains(event.getEventID())) {
+                        allEvents.add(event);
+                    }
                 }
-                TimelineEventAdapter eventAdapter = new TimelineEventAdapter();
-
-                RecyclerView recyclerView = findViewById(R.id.recycler_view);
-                recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                eventAdapter.updateData(events);
-                eventAdapter.setOnItemClickListener((event) -> {
-                    Intent intent = new Intent(TripDetailsActivity.this, EventDetailsActivity.class);
-                    intent.putExtra("event", event);
-                    startActivity(intent);
-                    finish();
-                });
-                recyclerView.setAdapter(eventAdapter);
+                Log.e("RecommendationAlgorithm", "Events retrieved");
+                Log.e("RecommendationAlgorithm", "All events: " + allEvents);
+                updateUI(allEvents);
             }
-        }).addOnFailureListener(e -> {
-            Log.e("EventRepository", "Error retrieving event data: " + e.getMessage());
+        }).addOnFailureListener(Throwable::printStackTrace);
+    }
+
+    private void updateUI(List<Event> events) {
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        eventAdapter = new TimelineEventAdapter();
+        eventAdapter.updateData(events);
+        eventAdapter.setOnItemClickListener((event) -> {
+            Intent intent = new Intent(TripDetailsActivity.this, EventDetailsActivity.class);
+            intent.putExtra("event", event);
+            startActivity(intent);
+            finish();
         });
+        recyclerView.setAdapter(eventAdapter);
     }
 
     @Override
