@@ -36,6 +36,15 @@
                         android:scaleType="centerCrop"
                         tools:ignore="ImageContrastCheck" />
 
+                        <include
+                            layout="@layout/show_location_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="16dp" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -293,6 +302,7 @@
 
     </ScrollView>
 
+<<<<<<< Updated upstream
     <include
         layout="@layout/show_location_button"
         android:layout_width="wrap_content"
@@ -304,6 +314,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="65dp" />
 
+=======
+>>>>>>> Stashed changes
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
