@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +24,8 @@ import edu.northeastern.numad24su_group9.model.User;
 
 public class SignUpActivity extends AppCompatActivity {
     private EditText nameEditText, emailEditText, passwordEditText;
-    private String uid, name;
+    private Spinner campusSpinner;
+    private String uid, name, campus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
         nameEditText = findViewById(R.id.name_edittext);
         emailEditText = findViewById(R.id.email_edittext);
         passwordEditText = findViewById(R.id.password_edittext);
+        campusSpinner = findViewById(R.id.campus_spinner);
         Button signUpButton = findViewById(R.id.signup_button);
         signUpButton.setOnClickListener(v -> handleSignUp());
     }
@@ -44,6 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
         currentUser.setUserID(uid);
         currentUser.setTrips(new ArrayList<>());
         currentUser.setProfileImage("user_profile.png");
+        currentUser.setCampus(campus);
 
         // Get a reference to the user's data in the database
         UserRepository userRepository = new UserRepository(uid);
@@ -57,6 +61,7 @@ public class SignUpActivity extends AppCompatActivity {
         String name = nameEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
+        campus = campusSpinner.getSelectedItem().toString();
 
         if (!email.endsWith("@northeastern.edu") && !email.endsWith("@husky.neu.edu")) {
             Toast.makeText(SignUpActivity.this, "We only accept 'northeastern.edu' email ids", Toast.LENGTH_LONG).show();

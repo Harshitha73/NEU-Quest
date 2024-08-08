@@ -11,6 +11,15 @@ public class User {
     private String profileImage;
     private List<String> eventsAttended; // list of event IDs
     private List<String> interests; // list of interests
+    private String campus;
+    public String getCampus() {
+        return campus;
+    }
+
+    public void setCampus(String campus) {
+        this.campus = campus;
+    }
+
 
     public User(){}
 
@@ -57,7 +66,7 @@ public class User {
     @NonNull
     @Override
     public String toString() {
-        return "User ID: " + userID + "Name: " + name + "Planned Trips: " + plannedTrips + "Profile Image: " + profileImage + "Events Attended: " + eventsAttended + "Interests: " + interests;
+        return "User ID: " + userID + "Name: " + name + "Planned Trips: " + plannedTrips + "Profile Image: " + profileImage + "Events Attended: " + eventsAttended + "Interests: " + interests + "Campus: " + campus;
     }
 
     public void setInterests(List<String> interests) {

@@ -50,6 +50,7 @@ import edu.northeastern.numad24su_group9.recycler.TripAdapter;
 public class ProfileActivity extends AppCompatActivity {
 
     private TextView interestsTextView;
+    private TextView campusTextView;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
@@ -71,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        campusTextView = findViewById(R.id.profile_campus_text_view);
 
         // Set up the click listener on the user's profile image view
         userProfileImage = findViewById(R.id.user_profile_image);
@@ -250,6 +252,7 @@ public class ProfileActivity extends AppCompatActivity {
             if (dataSnapshot.exists()) {
                 user.setName(dataSnapshot.child("name").getValue(String.class));
                 user.setProfileImage(dataSnapshot.child("profileImage").getValue(String.class));
+                user.setCampus(dataSnapshot.child("campus").getValue(String.class));
                 List<String> tripIDs = new ArrayList<>();
                 for (DataSnapshot tripSnapshot : dataSnapshot.child("plannedTrips").getChildren()) {
                     String tripID = tripSnapshot.getValue(String.class);
@@ -267,6 +270,9 @@ public class ProfileActivity extends AppCompatActivity {
     public void updateUI() {
         assert user != null;
         userNameTextView.setText(user.getName());
+
+        String campus = user.getCampus();
+        campusTextView.setText(campus != null ? "Campus: " + campus : "Campus: Not Set");
 
         Uri profileImageUri = userProfileRepo.getProfileImage(user.getProfileImage());
         Picasso.get().load(profileImageUri).into(userProfileImage);

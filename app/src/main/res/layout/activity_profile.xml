@@ -67,8 +67,19 @@
                         android:layout_height="wrap_content"
                         android:text="Email: "
                         android:textColor="@color/text_color"
-                        android:textSize="18sp"
-                        android:paddingBottom="12dp" />
+                        android:textSize="20sp"
+                        android:paddingBottom="8dp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/profile_campus_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Campus: No campus set"
+                        android:textColor="@color/text_color"
+                        android:textSize="20sp"
+                        android:paddingBottom="8dp"
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/profile_interests_text_view"
@@ -76,8 +87,9 @@
                         android:layout_height="wrap_content"
                         android:text="Interests: No interests set"
                         android:textColor="@color/text_color"
-                        android:textSize="18sp"
-                        android:layout_marginTop="16dp" />
+                        android:textSize="20sp"
+                        android:paddingBottom="8dp"
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"

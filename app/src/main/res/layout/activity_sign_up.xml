@@ -37,8 +37,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_signup"
-        app:layout_constraintBottom_toTopOf="@+id/email_edittext"
+        app:layout_constraintBottom_toTopOf="@+id/campus_spinner"
         tools:ignore="LabelFor,SpeakableTextPresentCheck,VisualLintTextFieldSize" />
+
+    <Spinner
+        android:id="@+id/campus_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/campus_options"
+        android:padding="12dp"
+        android:textColorHint="#757575"
+        android:background="@color/white"
+        android:textColor="@color/text_color"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name_edittext"
+        app:layout_constraintBottom_toTopOf="@+id/email_edittext"/>
 
     <EditText
         android:id="@+id/email_edittext"
@@ -54,7 +69,7 @@
         android:textColorHint="#757575"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name_edittext"
+        app:layout_constraintTop_toBottomOf="@+id/campus_spinner"
         app:layout_constraintBottom_toTopOf="@+id/password_edittext"
         tools:ignore="VisualLintTextFieldSize" />
 
