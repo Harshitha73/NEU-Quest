@@ -21,6 +21,7 @@ public class Event implements Serializable, Comparable<Event> {
     private String eventID;
     private String createdBy;
     private Boolean isReported;
+    private String category;
 
     public Event() {}
 
@@ -143,26 +144,29 @@ public class Event implements Serializable, Comparable<Event> {
         return (resultAfterOrEqualStart >= 0) && (resultAfterOrEqualEnd <= 0);
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @NonNull
     @Override
     public String toString() {
-        return "Title: " + title + "Description: " + description + "Image: " + image + "Start Time: " + startTime + "End Time: " + endTime + "Start Date: " + startDate + "End Date: " + endDate + "Price: " + price + "Location: " + location;
+        return "Title: " + title + "Description: " + description + "Image: " + image + "Start Time: " + startTime + "End Time: " + endTime + "Start Date: " + startDate + "End Date: " + endDate + "Price: " + price + "Location: " + location + "Register Link: " + registerLink + "Event ID: " + eventID + "Created By: " + createdBy + "Category: " + category;
     }
 
     @Override
     public int compareTo(Event o) {
-        // Define the formatter pattern
+        return this.getDateTime().compareTo(o.getDateTime());
+    }
+
+    public LocalDateTime getDateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-        // Combine the date and time strings and parse them into a LocalDateTime
-        String dateTimeStr = o.getStartDate() + " " + o.getStartTime();
-        LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, formatter);
-
-        // Combine the date and time strings and parse them into a LocalDateTime
-        String thisDateTimeStr = this.getStartDate() + " " + this.getStartTime();
-        LocalDateTime thisDateTime = LocalDateTime.parse(thisDateTimeStr, formatter);
-
-        return thisDateTime.compareTo(dateTime);
+        String dateTimeStr = this.getStartDate() + " " + this.getStartTime();
+        return LocalDateTime.parse(dateTimeStr, formatter);
     }
 }
 

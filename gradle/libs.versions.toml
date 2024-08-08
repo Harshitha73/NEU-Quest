@@ -18,6 +18,8 @@ material = "1.12.0"
 materialVersion = "1.8.0"
 picasso = "2.71828"
 coordinatorlayout = "1.2.0"
+timelineview = "1.0.9"
+timelineviewVersion = "1.1.4"
 
 [libraries]
 activity = { module = "androidx.activity:activity", version.ref = "activity" }
@@ -39,6 +41,8 @@ material-v180 = { module = "com.google.android.material:material", version.ref =
 material-v130alpha02 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinatorlayout" }
+timelineview = { module = "com.github.vivchar:TimelineView", version.ref = "timelineview" }
+vipulasri-timelineview = { module = "com.github.vipulasri:timelineview", version.ref = "timelineviewVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
