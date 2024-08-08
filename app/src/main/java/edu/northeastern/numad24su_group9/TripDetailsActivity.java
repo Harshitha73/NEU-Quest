@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -110,6 +111,11 @@ public class TripDetailsActivity extends AppCompatActivity {
                 }
                 Log.e("RecommendationAlgorithm", "Events retrieved");
                 Log.e("RecommendationAlgorithm", "All events: " + allEvents);
+
+                // Sort events by date and time
+                Collections.sort(allEvents);
+                Log.e("RecommendationAlgorithm", "Sorted events: " + allEvents);
+
                 updateUI(allEvents);
             }
         }).addOnFailureListener(Throwable::printStackTrace);

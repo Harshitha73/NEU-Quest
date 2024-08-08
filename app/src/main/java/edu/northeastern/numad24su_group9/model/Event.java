@@ -4,9 +4,10 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Event implements Serializable {
+public class Event implements Serializable, Comparable<Event> {
     private String title;
     private String startTime;
     private String endTime;
@@ -137,6 +138,22 @@ public class Event implements Serializable {
     @Override
     public String toString() {
         return "Title: " + title + "Description: " + description + "Image: " + image + "Start Time: " + startTime + "End Time: " + endTime + "Start Date: " + startDate + "End Date: " + endDate + "Price: " + price + "Location: " + location;
+    }
+
+    @Override
+    public int compareTo(Event o) {
+        // Define the formatter pattern
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        // Combine the date and time strings and parse them into a LocalDateTime
+        String dateTimeStr = o.getStartDate() + " " + o.getStartTime();
+        LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, formatter);
+
+        // Combine the date and time strings and parse them into a LocalDateTime
+        String thisDateTimeStr = this.getStartDate() + " " + this.getStartTime();
+        LocalDateTime thisDateTime = LocalDateTime.parse(thisDateTimeStr, formatter);
+
+        return thisDateTime.compareTo(dateTime);
     }
 }
 
