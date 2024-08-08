@@ -20,62 +20,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/profile_name_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name: "
-                android:textColor="@color/text_color"
-                android:textSize="16sp"
-                android:paddingBottom="8dp"/>
-
-            <TextView
-                android:id="@+id/profile_email_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Email: "
-                android:textColor="@color/text_color"
-                android:textSize="16sp"
-                android:paddingBottom="8dp"/>
-
-            <TextView
-                android:id="@+id/profile_interests_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Interests: No interests set"
-                android:textColor="@color/text_color"
-                android:textSize="16sp"
-                android:layout_marginTop="16dp"/>
-
-            <Button
-                android:id="@+id/edit_interests_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit Interests"
-                style="@style/CustomButton"
-                android:layout_marginTop="16dp"/>
-
-            <Button
-                android:id="@+id/logout_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Logout"
-                style="@style/CustomButton"
-                android:layout_marginTop="16dp"/>
-
-            <Button
-                android:id="@+id/delete_account_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Delete your account"
-                style="@style/CustomButton"
-                android:layout_marginTop="16dp"/>
-
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                app:cardCornerRadius="8dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="4dp">
 
                 <LinearLayout
@@ -86,22 +35,11 @@
 
                     <ImageView
                         android:id="@+id/user_profile_image"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:scaleType="centerCrop"
+                        android:layout_gravity="center_horizontal"
                         tools:ignore="ContentDescription" />
-
-                    <TextView
-                        android:id="@+id/change_profile_image"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:minHeight="48dp"
-                        android:text="Change Profile Image"
-                        android:textColor="@color/text_color"
-                        tools:ignore="HardcodedText,TextContrastCheck" />
 
                     <TextView
                         android:id="@+id/user_name"
@@ -110,7 +48,83 @@
                         android:layout_marginTop="16dp"
                         android:textAppearance="?attr/textAppearanceHeadline5"
                         android:textStyle="bold"
-                        android:textColor="@color/text_color" />
+                        android:textColor="@color/text_color"
+                        android:layout_gravity="center_horizontal" />
+
+                    <TextView
+                        android:id="@+id/profile_name_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name: "
+                        android:textColor="@color/text_color"
+                        android:textSize="20sp"
+                        android:paddingBottom="8dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/profile_email_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email: "
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp"
+                        android:paddingBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/profile_interests_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Interests: No interests set"
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp"
+                        android:layout_marginTop="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp">
+
+                        <Button
+                            android:id="@+id/edit_interests_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Edit Interests"
+                            style="@style/CustomButton"
+                            android:layout_marginEnd="8dp" />
+
+                        <Button
+                            android:id="@+id/logout_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Logout"
+                            style="@style/CustomButton"
+                            android:layout_marginStart="8dp" />
+
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/delete_account_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delete your account"
+                        style="@style/CustomButton"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/change_profile_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:minHeight="48dp"
+                        android:text="Change Profile Image"
+                        android:textColor="@color/text_color"
+                        android:layout_gravity="center_horizontal"
+                        tools:ignore="HardcodedText,TextContrastCheck" />
 
                 </LinearLayout>
 
