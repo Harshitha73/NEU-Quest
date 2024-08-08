@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -135,36 +136,42 @@ public class RegisterEventActivity extends AppCompatActivity {
 
     private void saveEvent() {
         Event event = new Event();
+        if(!(Objects.requireNonNull(eventStartTimeEditText.getText()).toString().isEmpty() ||
+                Objects.requireNonNull(eventEndTimeEditText.getText()).toString().isEmpty() ||
+                Objects.requireNonNull(eventStartDateEditText.getText()).toString().isEmpty() ||
+                Objects.requireNonNull(eventEndDateEditText.getText()).toString().isEmpty())) {
+            // Get the values from the EditText fields
+            event.setEventID(eventID);
+            event.setTitle(eventNameEditText.getText().toString());
+            event.setDescription(eventDescriptionEditText.getText().toString());
+            event.setPrice(eventPriceEditText.getText().toString());
+            event.setLocation(eventLocationEditText.getText().toString());
+            event.setStartTime(Objects.requireNonNull(eventStartTimeEditText.getText()).toString());
+            event.setEndTime(Objects.requireNonNull(eventEndTimeEditText.getText()).toString());
+            event.setStartDate(Objects.requireNonNull(eventStartDateEditText.getText()).toString());
+            event.setEndDate(Objects.requireNonNull(eventEndDateEditText.getText()).toString());
+            event.setRegisterLink(createValidURL(eventRegisterLinkEditText.getText().toString()));
+            event.setCreatedBy(uid);
+            event.setIsReported(false);
+            if (imageUploaded) {
+                event.setImage(eventID);
+            } else {
+                event.setImage(DEFAULT_EVENT_IMAGE_NAME);
+            }
 
-        // Get the values from the EditText fields
-        event.setEventID(eventID);
-        event.setTitle(eventNameEditText.getText().toString());
-        event.setDescription(eventDescriptionEditText.getText().toString());
-        event.setPrice(eventPriceEditText.getText().toString());
-        event.setLocation(eventLocationEditText.getText().toString());
-        event.setStartTime(Objects.requireNonNull(eventStartTimeEditText.getText()).toString());
-        event.setEndTime(Objects.requireNonNull(eventEndTimeEditText.getText()).toString());
-        event.setStartDate(Objects.requireNonNull(eventStartDateEditText.getText()).toString());
-        event.setEndDate(Objects.requireNonNull(eventEndDateEditText.getText()).toString());
-        event.setRegisterLink(createValidURL(eventRegisterLinkEditText.getText().toString()));
-        event.setCreatedBy(uid);
-        event.setIsReported(false);
-        if(imageUploaded) {
-            event.setImage(eventID);
+
+            EventRepository eventRepository = new EventRepository();
+            DatabaseReference eventRef = eventRepository.getEventRef().child(event.getEventID());
+
+            eventRef.setValue(event);
+
+            Intent intent = new Intent(RegisterEventActivity.this, RightNowActivity.class);
+            startActivity(intent);
+            finish();
         }
         else {
-            event.setImage(DEFAULT_EVENT_IMAGE_NAME);
+            Toast.makeText(this, "Event dates and times must not be empty", Toast.LENGTH_LONG).show();
         }
-
-
-        EventRepository eventRepository = new EventRepository();
-        DatabaseReference eventRef = eventRepository.getEventRef().child(event.getEventID());
-
-        eventRef.setValue(event);
-
-        Intent intent = new Intent(RegisterEventActivity.this, RightNowActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     @SuppressLint("IntentReset")
