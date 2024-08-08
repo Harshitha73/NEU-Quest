@@ -1,265 +1,283 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/background_color"
-    android:padding="24dp">
+    android:background="@color/background_color">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/create_event"
-            android:textColor="@color/text_color"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/enter_name"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_name_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/event_description"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_description_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/event_price"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_price_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/start_date"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_start_date_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                android:focusable="false"
-                android:clickable="true"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/start_time"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_start_time_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                android:focusable="false"
-                android:clickable="true"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/end_date"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_end_date_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                android:focusable="false"
-                android:clickable="true"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/end_time"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_end_time_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                android:focusable="false"
-                android:clickable="true"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/selected_image" />
-
-        <Button
-            android:id="@+id/buttonSelectImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_image"
-            style="@style/CustomButton"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/event_location"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_location_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/event_register_link"
-            android:layout_marginBottom="16dp"
-            app:hintTextColor="@color/text_color"
-            app:boxStrokeColor="@color/text_color"
-            android:textColorHint="@color/text_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_register_link_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/text_color"
-                tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation"
+        android:paddingBottom="80dp"
+        android:padding="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/cancelCreateEvent"
-                android:layout_width="0dp"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:backgroundTint="#E65353"
-                android:text="@android:string/cancel" />
-
-            <Button
-                android:id="@+id/create_event_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:backgroundTint="#4CAF50"
+                android:layout_marginBottom="16dp"
                 android:text="@string/create_event"
-                android:textColor="#FFFFFF"
-                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck,TouchTargetSizeCheck" />
+                android:textColor="@color/text_color"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/enter_name"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_name_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/event_description"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_description_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/event_price"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_price_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/start_date"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_start_date_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/start_time"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_start_time_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/end_date"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_end_date_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/end_time"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_end_time_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/selected_image" />
+
+            <Button
+                android:id="@+id/buttonSelectImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_image"
+                style="@style/CustomButton"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/event_location"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_location_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/event_register_link"
+                android:layout_marginBottom="16dp"
+                app:hintTextColor="@color/text_color"
+                app:boxStrokeColor="@color/text_color"
+                android:textColorHint="@color/text_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_register_link_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/text_color"
+                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/cancelCreateEvent"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#E65353"
+                    android:text="@android:string/cancel" />
+
+                <Button
+                    android:id="@+id/create_event_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="4dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#4CAF50"
+                    android:text="@string/create_event"
+                    android:textColor="#FFFFFF"
+                    tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck,TouchTargetSizeCheck" />
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/bottom_nav_menu"
+        android:background="#FFFFFF"
+        app:itemIconTint="@color/text_color"
+        app:itemTextColor="@color/text_color" />
+
+</RelativeLayout>

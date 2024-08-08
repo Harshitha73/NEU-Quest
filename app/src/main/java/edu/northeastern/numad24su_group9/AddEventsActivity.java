@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -73,6 +75,30 @@ public class AddEventsActivity extends AppCompatActivity {
         });
 
         getEvents();
+
+        // Set up Bottom Navigation
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView == null) {
+            Log.e("RightNowActivity", "bottomNavigationView is null");
+        } else {
+            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.navigation_home) {
+                        startActivity(new Intent(AddEventsActivity.this, RightNowActivity.class));
+                        return true;
+                    } else if (itemId == R.id.navigation_budget) {
+                        startActivity(new Intent(AddEventsActivity.this, PlanningTripActivity.class));
+                        return true;
+                    } else if (itemId == R.id.navigation_profile) {
+                        startActivity(new Intent(AddEventsActivity.this, ProfileActivity.class));
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
     }
 
     public void confirmSelection(View view) {

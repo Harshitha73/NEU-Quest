@@ -13,14 +13,17 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputFilter;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 
@@ -71,7 +74,7 @@ public class RegisterEventActivity extends AppCompatActivity {
         Button buttonSelectImage = findViewById(R.id.buttonSelectImage);
         Button createEventButton = findViewById(R.id.create_event_button);
         Button cancelEventButton = findViewById(R.id.cancelCreateEvent);
-
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         eventStartDateEditText.setOnClickListener(v -> showDatePicker(eventStartDateEditText));
         eventStartTimeEditText.setOnClickListener(v -> showTimePicker(eventStartTimeEditText));
@@ -104,6 +107,30 @@ public class RegisterEventActivity extends AppCompatActivity {
 
         // Set the click listener for the cancel create event button
         cancelEventButton.setOnClickListener(v -> startNextActivity());
+
+
+        // Set up Bottom Navigation
+        if (bottomNavigationView == null) {
+            Log.e("RightNowActivity", "bottomNavigationView is null");
+        } else {
+            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.navigation_home) {
+                        startActivity(new Intent(RegisterEventActivity.this, RightNowActivity.class));
+                        return true;
+                    } else if (itemId == R.id.navigation_budget) {
+                        startActivity(new Intent(RegisterEventActivity.this, PlanningTripActivity.class));
+                        return true;
+                    } else if (itemId == R.id.navigation_profile) {
+                        startActivity(new Intent(RegisterEventActivity.this, ProfileActivity.class));
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
     }
 
     private void saveEvent() {
