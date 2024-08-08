@@ -50,6 +50,7 @@
     <string name="comments_section">Comments</string>
     <string name="add_comment">Add a comment...</string>
     <string name="post_comment">Post Comment</string>
+    <string name="event_image">Event Image</string>
     <string-array name="campus_options">
         <item>Boston</item>
         <item>Silicon Valley</item>
