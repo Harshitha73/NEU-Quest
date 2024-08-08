@@ -148,6 +148,7 @@ public class RegisterEventActivity extends AppCompatActivity {
         event.setEndDate(Objects.requireNonNull(eventEndDateEditText.getText()).toString());
         event.setRegisterLink(createValidURL(eventRegisterLinkEditText.getText().toString()));
         event.setCreatedBy(uid);
+        event.setIsReported(false);
         if(imageUploaded) {
             event.setImage(eventID);
         }

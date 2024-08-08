@@ -20,6 +20,7 @@ public class Event implements Serializable, Comparable<Event> {
     private String image;
     private String eventID;
     private String createdBy;
+    private Boolean isReported;
 
     public Event() {}
 
@@ -65,6 +66,10 @@ public class Event implements Serializable, Comparable<Event> {
 
     public void setRegisterLink(String registerLink) {
         this.registerLink = registerLink;
+    }
+
+    public void setIsReported(Boolean value) {
+        this.isReported = value;
     }
 
     public String getTitle() {
@@ -113,6 +118,10 @@ public class Event implements Serializable, Comparable<Event> {
 
     public String getCreatedBy() {
         return createdBy;
+    }
+
+    public Boolean getIsReported() {
+        return isReported;
     }
 
     public void setCreatedBy(String createdBy) {

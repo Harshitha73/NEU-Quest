@@ -233,6 +233,18 @@
                 style="@style/ReportButton"
                 tools:ignore="VisualLintButtonSize" />
 
+            <TextView
+                android:id="@+id/already_reported_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                android:gravity="center"
+                android:text="@string/already_reported"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textStyle="bold"
+                android:textColor="@color/warning_button_color" />
+
             <!-- Comments Section -->
             <TextView
                 android:id="@+id/comments_section_label"

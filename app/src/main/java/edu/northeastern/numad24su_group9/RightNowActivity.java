@@ -158,6 +158,7 @@ public class RightNowActivity extends AppCompatActivity {
                     event.setPrice(eventSnapshot.child("price").getValue(String.class));
                     event.setLocation(eventSnapshot.child("location").getValue(String.class));
                     event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
+                    event.setIsReported(eventSnapshot.child("isReported").getValue(Boolean.class));
                     allEvents.add(event);
                 }
                 Log.e("RecommendationAlgorithm", "Events retrieved");

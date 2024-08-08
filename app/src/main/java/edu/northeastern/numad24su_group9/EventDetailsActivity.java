@@ -14,8 +14,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DatabaseReference;
 import com.squareup.picasso.Picasso;
 
+import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
 import edu.northeastern.numad24su_group9.model.Event;
 
@@ -39,11 +41,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         ImageView eventImageView = findViewById(R.id.event_image);
         Button registerButton = findViewById(R.id.register_button);
         FloatingActionButton showLocationButton = findViewById(R.id.show_location_fab);
+        Button reportButton = findViewById(R.id.report_button);
+        TextView alreadyReported = findViewById(R.id.already_reported_label);
 
         Event event = (Event) getIntent().getSerializableExtra("event");
         previousActivity = getIntent().getStringExtra("previousActivity");
-
-
 
         // Set the event details in the UI components
         assert event != null;
@@ -55,6 +57,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventEndTimeTextView.setText(event.getEndTime());
         eventPriceTextView.setText(event.getPrice());
         eventLocationTextView.setText(event.getLocation());
+
+        // Hide the report button if the event is already reported
+        if(event.getIsReported()) {
+            alreadyReported.setVisibility(View.VISIBLE);
+            reportButton.setVisibility(View.GONE);
+        }
 
         //On Location click, open maps
         showLocationButton.setOnClickListener(v -> {
@@ -70,6 +78,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Load the event image
         EventImageRepository eventImageRepository = new EventImageRepository();
         Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(eventImageView);
+
+        // Set the report button click listener
+        reportButton.setOnClickListener(v -> {
+            event.setIsReported(true);
+            alreadyReported.setVisibility(View.VISIBLE);
+            reportButton.setVisibility(View.GONE);
+            EventRepository eventRepository = new EventRepository();
+            DatabaseReference eventRef = eventRepository.getEventRef().child(event.getEventID());
+            eventRef.setValue(event);
+        });
 
         // Set the register button click listener
         registerButton.setOnClickListener(v -> {
