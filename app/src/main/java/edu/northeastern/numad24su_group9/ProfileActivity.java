@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -65,6 +66,7 @@ public class ProfileActivity extends AppCompatActivity {
     private List<Trip> trips;
     private static final int CAMERA_REQUEST = 2;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private Button adminConsoleButton;
 
 
     @SuppressLint("SetTextI18n")
@@ -133,7 +135,7 @@ public class ProfileActivity extends AppCompatActivity {
         Button editInterestsButton = findViewById(R.id.edit_interests_button);
         Button logoutButton = findViewById(R.id.logout_button);
         Button deleteAccountButton = findViewById(R.id.delete_account_button);
-        Button adminConsoleButton = findViewById(R.id.admin_console);
+        adminConsoleButton = findViewById(R.id.admin_console);
 
         editInterestsButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, InterestsActivity.class);
@@ -259,6 +261,8 @@ public class ProfileActivity extends AppCompatActivity {
                 user.setName(dataSnapshot.child("name").getValue(String.class));
                 user.setProfileImage(dataSnapshot.child("profileImage").getValue(String.class));
                 user.setCampus(dataSnapshot.child("campus").getValue(String.class));
+                user.setIsAdmin(dataSnapshot.child("isAdmin").getValue(Boolean.class));
+                Log.d("isADMIN", user.getIsAdmin().toString());
                 List<String> tripIDs = new ArrayList<>();
                 for (DataSnapshot tripSnapshot : dataSnapshot.child("plannedTrips").getChildren()) {
                     String tripID = tripSnapshot.getValue(String.class);
@@ -282,6 +286,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         Uri profileImageUri = userProfileRepo.getProfileImage(user.getProfileImage());
         Picasso.get().load(profileImageUri).into(userProfileImage);
+
+        if(user.getIsAdmin()) {
+            adminConsoleButton.setVisibility(View.VISIBLE);
+        }
 
         if (user.getTrips() != null) {
             getTrips();
