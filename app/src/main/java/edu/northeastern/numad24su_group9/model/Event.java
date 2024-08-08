@@ -118,11 +118,11 @@ public class Event implements Serializable {
         this.createdBy = createdBy;
     }
 
-    public boolean isWithinDateRange(String startDate, String endDate) {
+    public boolean isWithinDateRange(String eventStartDate, String startDate, String endDate) {
 
         // Parse the date strings into LocalDate objects
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate eventDate = LocalDate.parse(this.startDate, formatter);
+        LocalDate eventDate = LocalDate.parse(eventStartDate, formatter);
         LocalDate tripStartDate = LocalDate.parse(startDate, formatter);
         LocalDate tripEndDate = LocalDate.parse(endDate, formatter);
 

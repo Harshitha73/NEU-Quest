@@ -1,16 +1,25 @@
 package edu.northeastern.numad24su_group9;
 
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.android.gms.tasks.Task;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
@@ -18,9 +27,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.database.TripRepository;
+import edu.northeastern.numad24su_group9.gemini.GeminiClient;
 import edu.northeastern.numad24su_group9.model.Event;
 import edu.northeastern.numad24su_group9.model.Trip;
 import edu.northeastern.numad24su_group9.recycler.EventAdapter;
@@ -123,14 +136,60 @@ public class AddEventsActivity extends AppCompatActivity {
                     event.setLocation(eventSnapshot.child("location").getValue(String.class));
                     event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
 
-                    if (event.isWithinDateRange(trip.getStartDate(), trip.getEndDate()) && event.getLocation().equals(trip.getLocation())) {
+                    if (!Objects.equals(event.getStartDate(), "")) {
+                        if (event.isWithinDateRange(event.getStartDate(), trip.getStartDate(), trip.getEndDate()) && event.getLocation().equals(trip.getLocation())) {
+                            eventData.add(event);
+                        }
+                    } else {
                         eventData.add(event);
                     }
                 }
                 if (!(eventData.isEmpty())) {
+                    Log.e("Event", "Events found");
+                    Log.e("EventData", eventData.toString());
                     updateUI(eventData);
                 } else {
+                    Log.e("Event", "No events found");
                     Toast.makeText(this, "No events found", Toast.LENGTH_SHORT).show();
+                    // Handle the case where no events were found
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Change Trip Details");
+                    builder.setMessage("Would you like to change your trip details?");
+                    builder.setPositiveButton("Yes", (dialog, which) -> {
+                        // Navigate to the trip details screen
+                        Intent intent = new Intent(AddEventsActivity.this, PlanningTripActivity.class);
+                        startActivity(intent);
+                        finish();
+                    });
+                    builder.setNegativeButton("No", (dialog, which) -> {
+                        // Do nothing
+                        // Ask Gemini to provide event recommendations
+                        // Create a ThreadPoolExecutor
+                        int numThreads = Runtime.getRuntime().availableProcessors();
+                        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(numThreads);
+
+                        GeminiClient geminiClient = new GeminiClient();
+
+                        ListenableFuture<GenerateContentResponse> response = geminiClient.generateResult("Can you recommend a trip for following trip details: " + trip);
+
+                        // Generate trip name using Gemini API
+                        Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
+                            @SuppressLint("RestrictedApi")
+                            @Override
+                            public void onSuccess(GenerateContentResponse result) {
+                                Log.e("RecommendationAlgorithm", "Success");
+                                Log.e("RecommendationAlgorithm", Objects.requireNonNull(result.getText()));
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Throwable t) {
+                                // Handle the failure on the main thread
+                                Log.e("RecommendationAlgorithm", "Error: " + t.getMessage());
+                            }
+                        }, executor);
+                        finish();
+                    });
+                    builder.show();
                 }
             }
         }).addOnFailureListener(Throwable::printStackTrace);

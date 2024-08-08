@@ -45,16 +45,14 @@ import edu.northeastern.numad24su_group9.firebase.repository.storage.UserProfile
 import edu.northeastern.numad24su_group9.model.Trip;
 import edu.northeastern.numad24su_group9.model.User;
 import edu.northeastern.numad24su_group9.recycler.TripAdapter;
-import android.provider.MediaStore;
 
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView nameTextView, emailTextView, interestsTextView;
+    private TextView interestsTextView;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
-    private Button editInterestsButton, deleteAccountButton, logoutButton;
     private ActivityResultLauncher<Intent> launcher;
     private ImageView userProfileImage;
     private Uri imageUri;
@@ -64,11 +62,11 @@ public class ProfileActivity extends AppCompatActivity {
     private UserProfileRepository userProfileRepo;
     private TextView userNameTextView;
     private List<Trip> trips;
-    private static final int PICK_IMAGE_REQUEST = 1;
     private static final int CAMERA_REQUEST = 2;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,18 +95,12 @@ public class ProfileActivity extends AppCompatActivity {
 
         getUser(uid);
 
-        TextView plannedTripsTextView = findViewById(R.id.planned_trips_title);
-        plannedTripsTextView.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, PlanningTripActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
         launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK) {
                 Intent data = result.getData();
                 if (data != null && data.getExtras() != null) {
                     Bitmap photo = (Bitmap) data.getExtras().get("data");
+                    assert photo != null;
                     imageUri = getImageUri(this, photo);
                     Picasso.get().load(imageUri).into(userProfileImage);
                     userProfileRepo.uploadProfileImage(imageUri, uid);
@@ -133,12 +125,12 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        nameTextView = findViewById(R.id.profile_name_text_view);
-        emailTextView = findViewById(R.id.profile_email_text_view);
+        TextView nameTextView = findViewById(R.id.profile_name_text_view);
+        TextView emailTextView = findViewById(R.id.profile_email_text_view);
         interestsTextView = findViewById(R.id.profile_interests_text_view);
-        editInterestsButton = findViewById(R.id.edit_interests_button);
-        logoutButton = findViewById(R.id.logout_button);
-        deleteAccountButton = findViewById(R.id.delete_account_button);
+        Button editInterestsButton = findViewById(R.id.edit_interests_button);
+        Button logoutButton = findViewById(R.id.logout_button);
+        Button deleteAccountButton = findViewById(R.id.delete_account_button);
 
         editInterestsButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, InterestsActivity.class);
@@ -170,10 +162,7 @@ public class ProfileActivity extends AppCompatActivity {
             } else if (itemId == R.id.navigation_budget) {
                 startActivity(new Intent(ProfileActivity.this, PlanningTripActivity.class));
                 return true;
-            } else if (itemId == R.id.navigation_profile) {
-                return true;
-            }
-            return false;
+            } else return itemId == R.id.navigation_profile;
         });
     }
 
@@ -192,6 +181,7 @@ public class ProfileActivity extends AppCompatActivity {
                 })
                 .show();
     }
+    @SuppressLint("QueryPermissionsNeeded")
     private void dispatchTakePictureIntent() {
         if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -216,8 +206,9 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("IntentReset")
     private void pickImageFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        @SuppressLint("IntentReset") Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -232,6 +223,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             if (data != null && data.getExtras() != null) {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
+                assert photo != null;
                 imageUri = getImageUri(this, photo);
                 Picasso.get().load(imageUri).into(userProfileImage);
                 userProfileRepo.uploadProfileImage(imageUri, uid);
@@ -337,6 +329,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void loadUserInterests() {
         String uid = firebaseUser.getUid();
         databaseReference.child("Users").child(uid).child("interests").addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@Nullable DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -354,6 +347,7 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 interestsTextView.setText("Error loading interests");
