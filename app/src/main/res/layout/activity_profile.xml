@@ -138,6 +138,16 @@
                         android:layout_gravity="center_horizontal"
                         tools:ignore="HardcodedText,TextContrastCheck" />
 
+                    <Button
+                        android:id="@+id/admin_console"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="@string/admin_console"
+                        style="@style/ReportButton"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp" />
+
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>

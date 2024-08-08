@@ -133,6 +133,7 @@ public class ProfileActivity extends AppCompatActivity {
         Button editInterestsButton = findViewById(R.id.edit_interests_button);
         Button logoutButton = findViewById(R.id.logout_button);
         Button deleteAccountButton = findViewById(R.id.delete_account_button);
+        Button adminConsoleButton = findViewById(R.id.admin_console);
 
         editInterestsButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, InterestsActivity.class);
@@ -144,6 +145,11 @@ public class ProfileActivity extends AppCompatActivity {
         logoutButton.setOnClickListener(v -> logout());
 
         deleteAccountButton.setOnClickListener(v -> showDeleteAccountDialog());
+
+        adminConsoleButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminConsole.class);
+            startActivity(intent);
+        });
 
         if (firebaseUser != null) {
             String name = firebaseUser.getDisplayName();

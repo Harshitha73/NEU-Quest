@@ -54,6 +54,7 @@
     <string name="report">Report</string>
     <string name="request_admin">Request Admin</string>
     <string name="already_reported">Already Reported</string>
+    <string name="admin_console">Admin Console</string>
     <string-array name="campus_options">
         <item>Boston</item>
         <item>Silicon Valley</item>
