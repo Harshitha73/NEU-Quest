@@ -1,7 +1,6 @@
 package edu.northeastern.numad24su_group9;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,14 +24,13 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import edu.northeastern.numad24su_group9.checks.LocationChecker;
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.database.TripRepository;
 import edu.northeastern.numad24su_group9.gemini.GeminiClient;
@@ -163,8 +161,14 @@ public class AddEventsActivity extends AppCompatActivity {
                     event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
 
                     if (!Objects.equals(event.getStartDate(), "")) {
-                        if (event.isWithinDateRange(event.getStartDate(), trip.getStartDate(), trip.getEndDate()) && event.getLocation().equals(trip.getLocation())) {
-                            eventData.add(event);
+                        if (event.isWithinDateRange(event.getStartDate(), trip.getStartDate(), trip.getEndDate())) {
+                            if (LocationChecker.isSameLocation(event.getLocation(), trip.getLocation())) {
+                                eventData.add(event);
+                            } else {
+                                Toast.makeText(this, "No events in this location", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(this, "No events within date range", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         eventData.add(event);
@@ -176,7 +180,6 @@ public class AddEventsActivity extends AppCompatActivity {
                     updateUI(eventData);
                 } else {
                     Log.e("Event", "No events found");
-                    Toast.makeText(this, "No events found", Toast.LENGTH_SHORT).show();
                     // Handle the case where no events were found
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Change Trip Details");
