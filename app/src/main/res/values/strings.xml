@@ -55,6 +55,8 @@
     <string name="request_admin">Request Admin</string>
     <string name="already_reported">Already Reported</string>
     <string name="admin_console">Admin Console</string>
+    <string name="remove_event">Remove Event</string>
+    <string name="approve_event">Approve Event</string>
     <string-array name="campus_options">
         <item>Boston</item>
         <item>Silicon Valley</item>
