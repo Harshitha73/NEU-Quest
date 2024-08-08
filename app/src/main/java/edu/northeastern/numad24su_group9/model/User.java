@@ -15,6 +15,7 @@ public class User {
     public String getCampus() {
         return campus;
     }
+    public Boolean isAdmin;
 
     public void setCampus(String campus) {
         this.campus = campus;
@@ -71,5 +72,13 @@ public class User {
 
     public void setInterests(List<String> interests) {
         this.interests = interests;
+    }
+
+    public void setIsAdmin(Boolean value) {
+        isAdmin = value;
+    }
+
+    public Boolean getIsAdmin() {
+        return isAdmin;
     }
 }

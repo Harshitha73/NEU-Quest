@@ -224,6 +224,15 @@
                 style="@style/CustomButton"
                 tools:ignore="VisualLintButtonSize" />
 
+            <Button
+                android:id="@+id/report_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/report"
+                style="@style/ReportButton"
+                tools:ignore="VisualLintButtonSize" />
+
             <!-- Comments Section -->
             <TextView
                 android:id="@+id/comments_section_label"
@@ -281,7 +290,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="65dp" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

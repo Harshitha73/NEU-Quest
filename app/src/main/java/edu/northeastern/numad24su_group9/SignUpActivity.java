@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import edu.northeastern.numad24su_group9.model.User;
 public class SignUpActivity extends AppCompatActivity {
     private EditText nameEditText, emailEditText, passwordEditText;
     private Spinner campusSpinner;
+    private CheckBox adminCheck;
     private String uid, name, campus;
 
     @Override
@@ -36,6 +38,7 @@ public class SignUpActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.email_edittext);
         passwordEditText = findViewById(R.id.password_edittext);
         campusSpinner = findViewById(R.id.campus_spinner);
+        adminCheck = findViewById(R.id.adminRequest);
         Button signUpButton = findViewById(R.id.signup_button);
         signUpButton.setOnClickListener(v -> handleSignUp());
     }
@@ -48,6 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
         currentUser.setTrips(new ArrayList<>());
         currentUser.setProfileImage("user_profile.png");
         currentUser.setCampus(campus);
+        currentUser.setIsAdmin(adminCheck.isChecked());
 
         // Get a reference to the user's data in the database
         UserRepository userRepository = new UserRepository(uid);
