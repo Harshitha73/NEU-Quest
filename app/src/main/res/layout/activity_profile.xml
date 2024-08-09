@@ -20,11 +20,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Profile Information Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -38,13 +40,13 @@
                         android:layout_height="100dp"
                         android:scaleType="centerCrop"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="24dp"
                         tools:ignore="ContentDescription" />
 
                     <TextView
                         android:id="@+id/user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
                         android:textAppearance="?attr/textAppearanceHeadline5"
                         android:textStyle="bold"
                         android:textColor="@color/text_color"
@@ -121,7 +123,7 @@
                         android:layout_marginTop="12dp"
                         android:clickable="true"
                         android:focusable="true"
-                        android:minHeight="48dp"
+                        android:minHeight="28dp"
                         android:text="Change Profile Image"
                         android:textColor="@color/text_color"
                         android:layout_gravity="center_horizontal"
@@ -141,15 +143,27 @@
 
             </androidx.cardview.widget.CardView>
 
-            <include layout="@layout/planned_trips_divider" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/trips_recycler_view"
+            <!-- Planned Trips Section -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp" />
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <!-- Include the planned trips title layout -->
+                <include layout="@layout/planned_trips_divider" />
+
+                <!-- RecyclerView for displaying trips -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/trips_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
