@@ -1,7 +1,9 @@
 package edu.northeastern.numad24su_group9;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -33,6 +35,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import edu.northeastern.numad24su_group9.checks.LocationChecker;
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.database.TripRepository;
+import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.gemini.GeminiClient;
 import edu.northeastern.numad24su_group9.model.Event;
 import edu.northeastern.numad24su_group9.model.Trip;
@@ -111,6 +114,15 @@ public class AddEventsActivity extends AppCompatActivity {
             }
             trip.setEventIDs(selectedEventIDs);
 
+            SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+            String uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
+
+            // Get a reference to the user's data in the database
+            UserRepository userRepository = new UserRepository(uid);
+            DatabaseReference userRef = userRepository.getUserRef();
+            DatabaseReference userItineraryRef = userRef.child("plannedTrips").push();
+            userItineraryRef.setValue(trip.getTripID());
+
             // Save trip in the database
             TripRepository tripRepository = new TripRepository();
             DatabaseReference tripRef = tripRepository.getTripRef().child(trip.getTripID());
@@ -161,22 +173,15 @@ public class AddEventsActivity extends AppCompatActivity {
                     event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
 
                     if (!Objects.equals(event.getStartDate(), "")) {
-                        if (event.isWithinDateRange(event.getStartDate(), trip.getStartDate(), trip.getEndDate())) {
-                            if (LocationChecker.isSameLocation(event.getLocation(), trip.getLocation())) {
-                                eventData.add(event);
-                            } else {
-                                Toast.makeText(this, "No events in this location", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(this, "No events within date range", Toast.LENGTH_SHORT).show();
+                        if (event.isWithinDateRange(event.getStartDate(), trip.getStartDate(), trip.getEndDate()) && LocationChecker.isSameLocation(event.getLocation(), trip.getLocation())) {
+                            eventData.add(event);
                         }
                     } else {
                         eventData.add(event);
                     }
                 }
+
                 if (!(eventData.isEmpty())) {
-                    Log.e("Event", "Events found");
-                    Log.e("EventData", eventData.toString());
                     updateUI(eventData);
                 } else {
                     Log.e("Event", "No events found");
@@ -186,12 +191,9 @@ public class AddEventsActivity extends AppCompatActivity {
                     builder.setMessage("Would you like to change your trip details?");
                     builder.setPositiveButton("Yes", (dialog, which) -> {
                         // Navigate to the trip details screen
-                        Intent intent = new Intent(AddEventsActivity.this, PlanningTripActivity.class);
-                        startActivity(intent);
                         finish();
                     });
                     builder.setNegativeButton("No", (dialog, which) -> {
-                        // Do nothing
                         // Ask Gemini to provide event recommendations
                         // Create a ThreadPoolExecutor
                         int numThreads = Runtime.getRuntime().availableProcessors();
@@ -199,6 +201,7 @@ public class AddEventsActivity extends AppCompatActivity {
 
                         GeminiClient geminiClient = new GeminiClient();
 
+                        Log.e("RecommendationAlgorithm", "Generating trip : " + trip);
                         ListenableFuture<GenerateContentResponse> response = geminiClient.generateResult("Can you recommend a trip for following trip details: " + trip);
 
                         // Generate trip name using Gemini API

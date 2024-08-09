@@ -23,6 +23,9 @@ public class Event implements Serializable, Comparable<Event> {
     private String createdBy;
     private Boolean isReported;
     private String category;
+    private List<Comment> comments;
+
+    public Event() {}
 
     public List<Comment> getComments() {
         return comments;
@@ -31,10 +34,6 @@ public class Event implements Serializable, Comparable<Event> {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
-
-    private List<Comment> comments;
-
-    public Event() {}
 
     public void setEventID(String eventID) {
         this.eventID = eventID;

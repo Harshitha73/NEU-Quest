@@ -40,7 +40,7 @@ public class PlanningTripActivity extends AppCompatActivity {
     private TextInputEditText eventStartTimeEditText, eventEndTimeEditText, eventStartDateEditText, eventEndDateEditText;
     private CheckBox mealsCheckbox, transportCheckbox;
     private Button submitButton;
-    private String uid;
+    private String minBudget, maxBudget, mealsIncluded, transportIncluded, location, startDate, endDate, startTime, endTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +50,6 @@ public class PlanningTripActivity extends AppCompatActivity {
         setupBudgetSlider();
         setupSubmitButton();
         setupDateTimePicker();
-
-        SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-        uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
 
         // Set up Bottom Navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -142,6 +139,8 @@ public class PlanningTripActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void setupBudgetSlider() {
+        minBudget = String.valueOf(budgetRangeSlider.getValues().get(0));
+        maxBudget = String.valueOf(budgetRangeSlider.getValues().get(1));
         budgetRangeSlider.setValueFrom(0f);
         budgetRangeSlider.setValueTo(5000f);
         budgetRangeSlider.setStepSize(50f);
@@ -192,16 +191,9 @@ public class PlanningTripActivity extends AppCompatActivity {
                         trip.setEndTime(eventEndTimeEditText.getText().toString());
                         trip.setTripID(String.valueOf(System.currentTimeMillis()));
 
-                        // Get a reference to the user's data in the database
-                        UserRepository userRepository = new UserRepository(uid);
-                        DatabaseReference userRef = userRepository.getUserRef();
-                        DatabaseReference userItineraryRef = userRef.child("plannedTrips").push();
-                        userItineraryRef.setValue(trip.getTripID());
-
                         Intent intent = new Intent(PlanningTripActivity.this, AddEventsActivity.class);
                         intent.putExtra("trip", trip);
                         startActivity(intent);
-                        finish();
                     }
                 }
 
@@ -212,6 +204,33 @@ public class PlanningTripActivity extends AppCompatActivity {
                 }
             }, executor);
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        minBudget = String.valueOf(budgetRangeSlider.getValues().get(0));
+        maxBudget = String.valueOf(budgetRangeSlider.getValues().get(1));
+        mealsIncluded = String.valueOf(mealsCheckbox.isChecked());
+        transportIncluded = String.valueOf(transportCheckbox.isChecked());
+        location = eventLocationEditText.getText().toString();
+        startDate = eventStartDateEditText.getText().toString();
+        endDate = eventEndDateEditText.getText().toString();
+        startTime = eventStartTimeEditText.getText().toString();
+        endTime = eventEndTimeEditText.getText().toString();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        budgetRangeSlider.setValues(Float.parseFloat(minBudget), Float.parseFloat(maxBudget));
+        mealsCheckbox.setChecked(Boolean.parseBoolean(mealsIncluded));
+        transportCheckbox.setChecked(Boolean.parseBoolean(transportIncluded));
+        eventLocationEditText.setText(location);
+        eventStartDateEditText.setText(startDate);
+        eventEndDateEditText.setText(endDate);
+        eventStartTimeEditText.setText(startTime);
+        eventEndTimeEditText.setText(endTime);
     }
 
     @Override
