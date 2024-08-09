@@ -3,10 +3,12 @@ package edu.northeastern.numad24su_group9;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
@@ -36,15 +39,34 @@ public class AdminConsole extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_console);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         progressBar = findViewById(R.id.AdminConsoleProgressBar);
         getEvents();
+
+        // Set up Bottom Navigation
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView == null) {
+            Log.e("RightNowActivity", "bottomNavigationView is null");
+        } else {
+            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.navigation_home) {
+                        startActivity(new Intent(AdminConsole.this, RightNowActivity.class));
+                        return true;
+                    } else if (itemId == R.id.navigation_budget) {
+                        startActivity(new Intent(AdminConsole.this, PlanningTripActivity.class));
+                        return true;
+                    } else if (itemId == R.id.navigation_profile) {
+                        startActivity(new Intent(AdminConsole.this, ProfileActivity.class));
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
     }
 
     public void getEvents() {
