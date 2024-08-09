@@ -191,10 +191,19 @@ public class ProfileActivity extends AppCompatActivity {
     private void dispatchTakePictureIntent() {
         if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+            Log.d("ProfileActivity", "Camera permission granted: " +
+                    (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED));
+            Log.d("ProfileActivity", "Camera Intent can be resolved: " +
+                    (takePictureIntent.resolveActivity(getPackageManager()) != null));
+            try {
+                launcher.launch(takePictureIntent);
+            } catch (Exception e) {
+                Log.e("ProfileActivity", "Failed to launch camera", e);
+                Toast.makeText(this, "Failed to open the camera. Please try again.", Toast.LENGTH_SHORT).show();
             }
         } else {
+            Log.d("ProfileActivity", "Requesting");
+
             requestPermissions(new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
         }
     }
@@ -220,23 +229,6 @@ public class ProfileActivity extends AppCompatActivity {
                 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         launcher.launch(intent);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            if (data != null && data.getExtras() != null) {
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                assert photo != null;
-                imageUri = getImageUri(this, photo);
-                Picasso.get().load(imageUri).into(userProfileImage);
-                userProfileRepo.uploadProfileImage(imageUri, uid);
-
-                DatabaseReference userRef = userRepository.getUserRef();
-                userRef.child("profileImage").setValue(uid);
-            }
-        }
     }
 
     private Uri getImageUri(Context context, Bitmap bitmap) {
