@@ -8,22 +8,41 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.northeastern.numad24su_group9.firebase.DatabaseConnector;
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
+import edu.northeastern.numad24su_group9.model.Comment;
 import edu.northeastern.numad24su_group9.model.Event;
+import edu.northeastern.numad24su_group9.recycler.CommentsAdapter;
 
+
+// Comments will not post :(
 public class EventDetailsActivity extends AppCompatActivity {
 
     private String previousActivity;
+    private RecyclerView commentsRecyclerView;
+    private CommentsAdapter commentsAdapter;
+    private List<Comment> commentsList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +62,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         FloatingActionButton showLocationButton = findViewById(R.id.show_location_fab);
         Button reportButton = findViewById(R.id.report_button);
         TextView alreadyReported = findViewById(R.id.already_reported_label);
+        Button postCommentButton = findViewById(R.id.post_comment_button);
+        EditText commentInput = findViewById(R.id.comment_input);
+
+        // Initialize the RecyclerView for comments
+        commentsRecyclerView = findViewById(R.id.comments_recyclerview);
+        commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        commentsAdapter = new CommentsAdapter(commentsList, this);
+        commentsRecyclerView.setAdapter(commentsAdapter);
 
         Event event = (Event) getIntent().getSerializableExtra("event");
         previousActivity = getIntent().getStringExtra("previousActivity");
@@ -57,6 +84,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventEndTimeTextView.setText(event.getEndTime());
         eventPriceTextView.setText(event.getPrice());
         eventLocationTextView.setText(event.getLocation());
+
+        // Load comments from the database
+        loadComments(event.getEventID());
 
         // Hide the report button if the event is already reported
         if(event.getIsReported()) {
@@ -116,7 +146,72 @@ public class EventDetailsActivity extends AppCompatActivity {
         if(event.getRegisterLink() == null) {
             registerButton.setVisibility(View.INVISIBLE);
         }
+
+        postCommentButton.setOnClickListener(v -> {
+            String commentText = commentInput.getText().toString().trim();
+
+            if (!commentText.isEmpty()) {
+                // Add the comment to the database
+                addCommentToDatabase(event.getEventID(), commentText);
+
+                // Clear the input field after posting
+                commentInput.setText("");
+            } else {
+                // Show an error message if the comment is empty
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Empty Comment")
+                        .setMessage("Please enter a comment before posting.")
+                        .setPositiveButton("Dismiss", (dialog, which) -> dialog.dismiss())
+                        .create()
+                        .show();
+            }
+        });
     }
+
+    private void addCommentToDatabase(String eventId, String commentText) {
+        // Get a reference to the comments section in the Firebase database
+        DatabaseReference commentsRef = DatabaseConnector.getInstance().getEventsReference().child(eventId).child("comments");
+
+        // Generate a unique ID for the new comment
+        String commentId = commentsRef.push().getKey();
+
+        // Create a Comment object
+        Comment comment = new Comment(commentId, commentText, System.currentTimeMillis());
+
+        // Save the comment to the database
+        assert commentId != null;
+        commentsRef.child(commentId).setValue(comment).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // Comment was successfully written
+                Log.d("Comment", "Comment posted: " + commentText);
+            } else {
+                // Handle the error
+                Log.e("Comment", "Failed to post comment.", task.getException());
+            }
+        });
+    }
+
+    private void loadComments(String eventId) {
+        DatabaseReference commentsRef = FirebaseDatabase.getInstance().getReference("comments").child(eventId);
+
+        commentsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                commentsList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Comment comment = snapshot.getValue(Comment.class);
+                    commentsList.add(comment);
+                }
+                commentsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("EventDetailsActivity", "Failed to load comments.", databaseError.toException());
+            }
+        });
+    }
+
     @Override
     public void onBackPressed() {
         Intent intent;

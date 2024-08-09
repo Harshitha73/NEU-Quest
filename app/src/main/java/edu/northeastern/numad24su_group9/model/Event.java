@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class Event implements Serializable, Comparable<Event> {
     private String title;
@@ -22,6 +23,16 @@ public class Event implements Serializable, Comparable<Event> {
     private String createdBy;
     private Boolean isReported;
     private String category;
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    private List<Comment> comments;
 
     public Event() {}
 

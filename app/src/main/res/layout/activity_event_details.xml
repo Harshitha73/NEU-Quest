@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/background_color" >
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/bottom_navigation">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,14 +37,14 @@
                         android:scaleType="centerCrop"
                         tools:ignore="ImageContrastCheck" />
 
-                        <include
-                            layout="@layout/show_location_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|end"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginBottom="16dp" />
+                    <include
+                        layout="@layout/show_location_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -302,17 +303,7 @@
 
     </ScrollView>
 
-    <include
-        layout="@layout/show_location_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="65dp" />
-
+    <!-- Keep this as it is, no need to move it inside ScrollView -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
