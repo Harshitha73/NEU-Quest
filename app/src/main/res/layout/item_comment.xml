@@ -13,6 +13,15 @@
         android:orientation="vertical"
         android:paddingVertical="8dp">
 
+        <TextView
+            android:id="@+id/commenter_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
         <!-- Comment Text -->
         <TextView
             android:id="@+id/comment_text"

@@ -1,8 +1,10 @@
 package edu.northeastern.numad24su_group9;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -189,12 +191,14 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void addCommentToDatabase(String eventId, String commentText) {
         // Get a reference to the comments section in the Firebase database
         DatabaseReference commentsRef = DatabaseConnector.getInstance().getEventsReference().child(eventId).child("comments");
+        SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        String commenterName = sharedPreferences.getString(AppConstants.USER_NAME, "");
 
         // Generate a unique ID for the new comment
         String commentId = commentsRef.push().getKey();
 
         // Create a Comment object
-        Comment comment = new Comment(commentId, commentText, System.currentTimeMillis());
+        Comment comment = new Comment(commentId, commentText, System.currentTimeMillis(), commenterName);
 
         // Save the comment to the database
         assert commentId != null;
@@ -222,6 +226,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     comment.setCommentId(snapshot.child("commentId").getValue(String.class));
                     comment.setCommentText(snapshot.child("commentText").getValue(String.class));
                     comment.setTimestamp(snapshot.child("timestamp").getValue(Long.class));
+                    comment.setCommenterName(snapshot.child("commenterName").getValue(String.class));
                     commentsList.add(0, comment);
                 }
                 commentsAdapter.updateList(commentsList);

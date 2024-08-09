@@ -93,6 +93,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                             SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
                                                             SharedPreferences.Editor editor = sharedPreferences.edit();
                                                             editor.putString(AppConstants.UID_KEY, uid);
+                                                            editor.putString(AppConstants.USER_NAME, name);
                                                             editor.apply();
 
                                                             addUserToDatabase();

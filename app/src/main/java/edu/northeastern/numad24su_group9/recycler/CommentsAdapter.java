@@ -40,7 +40,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         Comment comment = commentsList.get(position);
         holder.commentText.setText(comment.getCommentText());
-        //holder.commenterName.setText(comment.getCommentId()); // Assuming you want to show the comment ID as the name
+        holder.commenterName.setText(comment.getCommenterName()); // Assuming you want to show the comment ID as the name
         holder.commentTimestamp.setText(formatTimestamp(comment.getTimestamp()));
 
         // If you have a way to load avatar images, use Picasso or Glide here
@@ -59,7 +59,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
-            //commenterName = itemView.findViewById(R.id.commenter_name);
+            commenterName = itemView.findViewById(R.id.commenter_name);
             commentTimestamp = itemView.findViewById(R.id.comment_timestamp);
             commentText = itemView.findViewById(R.id.comment_text);
             //commentAvatar = itemView.findViewById(R.id.comment_avatar);
