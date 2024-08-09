@@ -17,6 +17,7 @@ material = "1.12.0"
 picasso = "2.71828"
 coordinatorlayout = "1.2.0"
 timelineviewVersion = "1.1.5"
+legacySupportV4 = "1.0.0"
 
 [libraries]
 activity = { module = "androidx.activity:activity", version.ref = "activity" }
@@ -37,6 +38,7 @@ material-v130alpha02 = { module = "com.google.android.material:material", versio
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinatorlayout" }
 vipulasri-timelineview = { module = "com.github.vipulasri:timelineview", version.ref = "timelineviewVersion" }
+legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
