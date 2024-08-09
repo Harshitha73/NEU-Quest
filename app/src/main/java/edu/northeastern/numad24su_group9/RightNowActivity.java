@@ -26,6 +26,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DataSnapshot;
 
+import edu.northeastern.numad24su_group9.checks.LocationChecker;
 import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.gemini.GeminiClient;
 import edu.northeastern.numad24su_group9.model.Event;
@@ -288,7 +289,8 @@ public class RightNowActivity extends AppCompatActivity {
         List<Event> filteredEvents = new ArrayList<>();
         for (Event event : allEvents) {
             if (event.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    event.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                    event.getDescription().toLowerCase().contains(query.toLowerCase()) ||
+                        LocationChecker.isSameLocation(event.getLocation(), query.toLowerCase())) {
                 filteredEvents.add(event);
             }
         }
