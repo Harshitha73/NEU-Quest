@@ -1,12 +1,19 @@
 package edu.northeastern.numad24su_group9;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,6 +31,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "MyChannel";
+            String description = "Channel Description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("CHANNEL_ID", name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
         // Initialize Firebase Auth
         firebaseUser = AuthConnector.getFirebaseAuth().getCurrentUser();
 
@@ -39,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         // Hide the app title bar
         getSupportActionBar().hide();
 
-
         // Find the buttons in the layout
         Button signUpButton = findViewById(R.id.signUpButton);
         Button loginButton = findViewById(R.id.loginButton);
@@ -51,6 +67,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         loginButton.setOnClickListener(v -> {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "CHANNEL_ID")
+                    .setSmallIcon(R.drawable.ic_app_icon_background) // Replace with your app's icon
+                    .setContentTitle("Login Attempt")
+                    .setContentText("You pressed the login button!")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            notificationManager.notify(1, builder.build());
+
             // Start the login activity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         });

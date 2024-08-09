@@ -55,6 +55,9 @@ dependencies {
     implementation(libs.material.v130alpha02)
     implementation(libs.guava)
     implementation(libs.vipulasri.timelineview)
+    implementation(libs.core.ktx.v190)
+    implementation (libs.appcompat.v170alpha01)
+    implementation (libs.androidx.work.runtime.ktx)
 }
 
 apply(plugin = "com.google.gms.google-services")

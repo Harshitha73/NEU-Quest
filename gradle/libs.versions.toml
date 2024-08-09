@@ -1,7 +1,10 @@
 [versions]
 activity = "1.9.1"
 agp = "8.5.0"
+appcompatVersion = "1.7.0-alpha01"
 constraintlayout = "2.1.4"
+coreKtx = "2.2.0"
+coreKtxVersion = "1.9.0"
 firebaseAuth = "23.0.0"
 firebaseBom = "33.1.2"
 firebaseDatabase = "21.0.0"
@@ -18,10 +21,16 @@ picasso = "2.71828"
 coordinatorlayout = "1.2.0"
 timelineviewVersion = "1.1.5"
 legacySupportV4 = "1.0.0"
+workRuntimeKtx = "2.7.0'"
+workRuntimeKtxVersion = "2.7.1"
 
 [libraries]
 activity = { module = "androidx.activity:activity", version.ref = "activity" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtxVersion" }
+appcompat-v170alpha01 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+core-ktx-v190 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -39,6 +48,7 @@ picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinatorlayout" }
 vipulasri-timelineview = { module = "com.github.vipulasri:timelineview", version.ref = "timelineviewVersion" }
 legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
+work-runtime-ktx = { module = "'androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
