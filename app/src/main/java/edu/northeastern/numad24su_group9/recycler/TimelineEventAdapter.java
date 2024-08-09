@@ -1,24 +1,20 @@
 package edu.northeastern.numad24su_group9.recycler;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.github.vipulasri.timelineview.TimelineView;
 
 import java.util.List;
 
 import edu.northeastern.numad24su_group9.R;
-import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
 import edu.northeastern.numad24su_group9.model.Event;
 
-public class TimelineEventAdapter extends RecyclerView.Adapter<TimelineEventAdapter.ViewHolder> {
+public class TimelineEventAdapter extends RecyclerView.Adapter<TimelineEventAdapter.TimelineViewHolder> {
     private List<Event> events;
     private TimelineEventAdapter.OnItemClickListener listener;
 
@@ -28,12 +24,51 @@ public class TimelineEventAdapter extends RecyclerView.Adapter<TimelineEventAdap
         this.events = events;
     }
 
-    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public int getItemViewType(int position) {
+        return TimelineView.getTimeLineViewType(position, getItemCount());
+    }
+
+    @Override
+    public TimelineViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_timeline_event, parent, false);
-        return new ViewHolder(view);
+        return new TimelineViewHolder(view, viewType);
+    }
+
+    @Override
+    public void onBindViewHolder(TimelineViewHolder holder, int position) {
+        Event event = events.get(position);
+
+        if (!event.getStartDate().isEmpty()) {
+            holder.date.setVisibility(View.VISIBLE);
+            holder.date.setText(event.getStartDate() + event.getStartTime());
+        } else {
+            holder.date.setVisibility(View.GONE);
+        }
+
+        holder.message.setText(event.getTitle());
+        holder.itemView.setOnClickListener(v -> handleEventClick(event));
+    }
+
+    @Override
+    public int getItemCount() {
+        return events.size();
+    }
+
+    static class TimelineViewHolder extends RecyclerView.ViewHolder {
+
+        final TextView date;
+        final TextView message;
+        final TimelineView timeline;
+
+        TimelineViewHolder(View itemView, int viewType) {
+            super(itemView);
+            date = itemView.findViewById(R.id.text_timeline_date);
+            message = itemView.findViewById(R.id.text_timeline_title);
+            timeline = itemView.findViewById(R.id.timeline);
+            timeline.initLine(viewType);
+        }
     }
 
     public interface OnItemClickListener {
@@ -44,43 +79,10 @@ public class TimelineEventAdapter extends RecyclerView.Adapter<TimelineEventAdap
         this.listener = listener;
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Event event = events.get(position);
-        Log.d("TimelineEventAdapter", "Event: " + event);
-        EventImageRepository eventImageRepository = new EventImageRepository();
-
-        Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(holder.imageView);
-        holder.titleTextView.setText(event.getTitle());
-        holder.descriptionTextView.setText(event.getDescription());
-        holder.timeTextView.setText(event.getStartTime());
-        holder.itemView.setOnClickListener(v -> handleEventClick(event));
-    }
-
-    @Override
-    public int getItemCount() {
-        return events.size();
-    }
-
     private void handleEventClick(Event event) {
         // Handle the event click event
         if (listener != null) {
             listener.onItemClick(event);
-        }
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView imageView;
-        public TextView titleTextView;
-        public TextView descriptionTextView;
-        public TextView timeTextView;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.event_image);
-            titleTextView = itemView.findViewById(R.id.event_name);
-            descriptionTextView = itemView.findViewById(R.id.event_description);
-            timeTextView = itemView.findViewById(R.id.event_time);
         }
     }
 }

@@ -122,8 +122,9 @@ public class TripDetailsActivity extends AppCompatActivity {
     }
 
     private void updateUI(List<Event> events) {
+
         recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         eventAdapter = new TimelineEventAdapter();
         eventAdapter.updateData(events);
         eventAdapter.setOnItemClickListener((event) -> {
