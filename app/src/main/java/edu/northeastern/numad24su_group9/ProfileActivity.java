@@ -9,6 +9,9 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -47,7 +50,6 @@ import edu.northeastern.numad24su_group9.model.Trip;
 import edu.northeastern.numad24su_group9.model.User;
 import edu.northeastern.numad24su_group9.recycler.TripAdapter;
 
-
 public class ProfileActivity extends AppCompatActivity {
 
     private TextView interestsTextView;
@@ -68,16 +70,26 @@ public class ProfileActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private Button adminConsoleButton;
 
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        // Initialize views
+        userNameTextView = findViewById(R.id.user_name);
+        TextView nameTextView = findViewById(R.id.profile_name_text_view);
+        TextView emailTextView = findViewById(R.id.profile_email_text_view);
         campusTextView = findViewById(R.id.profile_campus_text_view);
+        interestsTextView = findViewById(R.id.profile_interests_text_view);
+        Button editInterestsButton = findViewById(R.id.edit_interests_button);
+        Button logoutButton = findViewById(R.id.logout_button);
+        Button deleteAccountButton = findViewById(R.id.delete_account_button);
+        adminConsoleButton = findViewById(R.id.admin_console);
+        userProfileImage = findViewById(R.id.user_profile_image);
+        TextView changeProfileImageTextView = findViewById(R.id.change_profile_image);
 
         // Set up the click listener on the user's profile image view
-        userProfileImage = findViewById(R.id.user_profile_image);
         userProfileImage.setOnClickListener(v -> showImageSourceDialog());
 
         // Get the current user's ID
@@ -90,9 +102,6 @@ public class ProfileActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        userNameTextView = findViewById(R.id.user_name);
-        TextView changeProfileImageTextView = findViewById(R.id.change_profile_image);
 
         // Set the click listener on the "Change Profile Image" TextView
         changeProfileImageTextView.setOnClickListener(v -> showImageSourceDialog());
@@ -111,31 +120,17 @@ public class ProfileActivity extends AppCompatActivity {
 
                     DatabaseReference userRef = userRepository.getUserRef();
                     userRef.child("profileImage").setValue(uid);
-                }
-                else if (data != null) {
+                } else if (data != null) {
                     Uri selectedImageUri = data.getData();
                     if (selectedImageUri != null) {
-                        // Load the selected image into the ImageView
                         Picasso.get().load(selectedImageUri).into(userProfileImage);
-
-                        // Update the profile image in Firebase
                         userProfileRepo.uploadProfileImage(selectedImageUri, uid);
-
-                        // Update the profile image reference in the database
                         DatabaseReference userRef = userRepository.getUserRef();
                         userRef.child("profileImage").setValue(uid);
                     }
                 }
             }
         });
-
-        TextView nameTextView = findViewById(R.id.profile_name_text_view);
-        TextView emailTextView = findViewById(R.id.profile_email_text_view);
-        interestsTextView = findViewById(R.id.profile_interests_text_view);
-        Button editInterestsButton = findViewById(R.id.edit_interests_button);
-        Button logoutButton = findViewById(R.id.logout_button);
-        Button deleteAccountButton = findViewById(R.id.delete_account_button);
-        adminConsoleButton = findViewById(R.id.admin_console);
 
         editInterestsButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, InterestsActivity.class);
@@ -157,8 +152,8 @@ public class ProfileActivity extends AppCompatActivity {
             String name = firebaseUser.getDisplayName();
             String email = firebaseUser.getEmail();
 
-            nameTextView.setText(name != null ? "Name: " + name : "Name: " + "Name not set");
-            emailTextView.setText("Email: " + email);
+            setFormattedText(nameTextView, "Name: ", name != null ? name : "Name not set");
+            setFormattedText(emailTextView, "Email: ", email);
             loadUserInterests();
         }
 
@@ -191,6 +186,7 @@ public class ProfileActivity extends AppCompatActivity {
                 })
                 .show();
     }
+
     @SuppressLint("QueryPermissionsNeeded")
     private void dispatchTakePictureIntent() {
         if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -199,7 +195,6 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST);
             }
         } else {
-            // Request camera permission
             requestPermissions(new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
         }
     }
@@ -272,7 +267,6 @@ public class ProfileActivity extends AppCompatActivity {
                 updateUI();
             }
         }).addOnFailureListener(e -> {
-            // Handle any exceptions that occur during the database query
             Log.e("UserRepository", "Error retrieving user data: " + e.getMessage());
         });
     }
@@ -282,12 +276,12 @@ public class ProfileActivity extends AppCompatActivity {
         userNameTextView.setText(user.getName());
 
         String campus = user.getCampus();
-        campusTextView.setText(campus != null ? "Campus: " + campus : "Campus: Not Set");
+        setFormattedText(campusTextView, "Campus: ", campus != null ? campus : "Not Set");
 
         Uri profileImageUri = userProfileRepo.getProfileImage(user.getProfileImage());
         Picasso.get().load(profileImageUri).into(userProfileImage);
 
-        if(user.getIsAdmin()) {
+        if (user.getIsAdmin()) {
             adminConsoleButton.setVisibility(View.VISIBLE);
         }
 
@@ -325,7 +319,6 @@ public class ProfileActivity extends AppCompatActivity {
                     trips.add(trip);
                 }
 
-                // Setup recycler view and show all trips
                 RecyclerView tripRecyclerView = findViewById(R.id.trips_recycler_view);
                 tripRecyclerView.setLayoutManager(new LinearLayoutManager(this));
                 TripAdapter tripAdapter = new TripAdapter(trips);
@@ -353,7 +346,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@Nullable DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    StringBuilder interestsBuilder = new StringBuilder("Interests: ");
+                    StringBuilder interestsBuilder = new StringBuilder();
                     for (DataSnapshot interestSnapshot : snapshot.getChildren()) {
                         interestsBuilder.append(interestSnapshot.getValue(String.class)).append(", ");
                     }
@@ -361,18 +354,24 @@ public class ProfileActivity extends AppCompatActivity {
                     if (!interests.isEmpty()) {
                         interests = interests.substring(0, interests.length() - 2); // Remove the last comma and space
                     }
-                    interestsTextView.setText(interests.isEmpty() ? "Interests: No interests set" : interests);
+                    setFormattedText(interestsTextView, "Interests: ", interests.isEmpty() ? "No interests set" : interests);
                 } else {
-                    interestsTextView.setText("Interests: No interests set");
+                    setFormattedText(interestsTextView, "Interests: ", "No interests set");
                 }
             }
 
             @SuppressLint("SetTextI18n")
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                interestsTextView.setText("Error loading interests");
+                setFormattedText(interestsTextView, "Interests: ", "Error loading interests");
             }
         });
+    }
+
+    private void setFormattedText(TextView textView, String label, String value) {
+        SpannableString spannableString = new SpannableString(label + value);
+        spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(spannableString);
     }
 
     private void showDeleteAccountDialog() {
@@ -394,11 +393,8 @@ public class ProfileActivity extends AppCompatActivity {
     private void deleteAccount() {
         if (firebaseUser != null) {
             String uid = firebaseUser.getUid();
-
-            // Delete user data from Firebase Database
             databaseReference.child("Users").child(uid).removeValue().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    // Delete user authentication
                     firebaseUser.delete().addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             Toast.makeText(ProfileActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
@@ -419,7 +415,6 @@ public class ProfileActivity extends AppCompatActivity {
     @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
-        // Go back to RightNowActivity instead of logging out
         Intent intent = new Intent(ProfileActivity.this, RightNowActivity.class);
         startActivity(intent);
         finish();

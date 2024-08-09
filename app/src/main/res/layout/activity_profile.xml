@@ -23,7 +23,6 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp">
 
@@ -51,79 +50,69 @@
                         android:textColor="@color/text_color"
                         android:layout_gravity="center_horizontal" />
 
+                    <!-- Combined Name Header and Actual Name -->
                     <TextView
                         android:id="@+id/profile_name_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Name: "
                         android:textColor="@color/text_color"
-                        android:textSize="20sp"
-                        android:paddingBottom="8dp"
-                        android:textStyle="bold" />
+                        android:textSize="20sp" />
 
+                    <!-- Combined Email Header and Actual Email -->
                     <TextView
                         android:id="@+id/profile_email_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Email: "
                         android:textColor="@color/text_color"
-                        android:textSize="20sp"
-                        android:paddingBottom="8dp"
-                        android:textStyle="bold"/>
+                        android:textSize="20sp" />
 
+                    <!-- Combined Campus Header and Actual Campus -->
                     <TextView
                         android:id="@+id/profile_campus_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Campus: No campus set"
                         android:textColor="@color/text_color"
-                        android:textSize="20sp"
-                        android:paddingBottom="8dp"
-                        android:textStyle="bold"/>
+                        android:textSize="20sp" />
 
+                    <!-- Combined Interests Header and Actual Interests -->
                     <TextView
                         android:id="@+id/profile_interests_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Interests: No interests set"
                         android:textColor="@color/text_color"
-                        android:textSize="20sp"
-                        android:paddingBottom="8dp"
-                        android:textStyle="bold" />
+                        android:textSize="20sp" />
 
+                    <!-- Buttons stacked and same width -->
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
                         android:layout_marginTop="16dp">
 
                         <Button
                             android:id="@+id/edit_interests_button"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Edit Interests"
                             style="@style/CustomButton"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginBottom="8dp" />
 
                         <Button
                             android:id="@+id/logout_button"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Logout"
                             style="@style/CustomButton"
-                            android:layout_marginStart="8dp" />
+                            android:layout_marginBottom="8dp" />
 
+                        <Button
+                            android:id="@+id/delete_account_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Delete your account"
+                            style="@style/CustomButton" />
                     </LinearLayout>
-
-                    <Button
-                        android:id="@+id/delete_account_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Delete your account"
-                        style="@style/CustomButton"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="16dp" />
 
                     <TextView
                         android:id="@+id/change_profile_image"
