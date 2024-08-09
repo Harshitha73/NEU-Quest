@@ -222,7 +222,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     comment.setCommentId(snapshot.child("commentId").getValue(String.class));
                     comment.setCommentText(snapshot.child("commentText").getValue(String.class));
                     comment.setTimestamp(snapshot.child("timestamp").getValue(Long.class));
-                    commentsList.add(comment);
+                    commentsList.add(0, comment);
                 }
                 commentsAdapter.updateList(commentsList);
                 commentsRecyclerView.setAdapter(commentsAdapter);
