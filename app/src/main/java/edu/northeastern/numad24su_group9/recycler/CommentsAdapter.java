@@ -1,6 +1,5 @@
 package edu.northeastern.numad24su_group9.recycler;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +18,14 @@ import edu.northeastern.numad24su_group9.model.Comment;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentViewHolder> {
 
-    private final List<Comment> commentsList;
-    private final Context context;
+    private List<Comment> commentsList;
 
-    public CommentsAdapter(List<Comment> commentsList, Context context) {
+    public CommentsAdapter(List<Comment> commentsList) {
         this.commentsList = commentsList;
-        this.context = context;
+    }
+
+    public void updateList(List<Comment> commentsList) {
+        this.commentsList = commentsList;
     }
 
     @NonNull
@@ -39,12 +40,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         Comment comment = commentsList.get(position);
         holder.commentText.setText(comment.getCommentText());
-        holder.commenterName.setText(comment.getCommentId()); // Assuming you want to show the comment ID as the name
+        //holder.commenterName.setText(comment.getCommentId()); // Assuming you want to show the comment ID as the name
         holder.commentTimestamp.setText(formatTimestamp(comment.getTimestamp()));
 
         // If you have a way to load avatar images, use Picasso or Glide here
         // For now, let's assume a placeholder image is set.
-        Picasso.get().load(R.drawable.ic_profile).into(holder.commentAvatar);
+        //Picasso.get().load(R.drawable.ic_profile).into(holder.commentAvatar);
     }
 
     @Override
@@ -58,10 +59,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
-            commenterName = itemView.findViewById(R.id.commenter_name);
+            //commenterName = itemView.findViewById(R.id.commenter_name);
             commentTimestamp = itemView.findViewById(R.id.comment_timestamp);
             commentText = itemView.findViewById(R.id.comment_text);
-            commentAvatar = itemView.findViewById(R.id.comment_avatar);
+            //commentAvatar = itemView.findViewById(R.id.comment_avatar);
         }
     }
 

@@ -12,10 +12,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,6 +50,22 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
+        // Set up Bottom Navigation
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                startActivity(new Intent(EventDetailsActivity.this, RightNowActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_budget) {
+                return true; // Already in the EventDetailsActivity or similar context
+            } else if (itemId == R.id.navigation_profile) {
+                startActivity(new Intent(EventDetailsActivity.this, ProfileActivity.class));
+                return true;
+            }
+            return false;
+        });
+
         // Find the UI components
         TextView eventNameTextView = findViewById(R.id.event_name);
         TextView eventDescriptionTextView = findViewById(R.id.event_description);
@@ -68,7 +86,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Initialize the RecyclerView for comments
         commentsRecyclerView = findViewById(R.id.comments_recyclerview);
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        commentsAdapter = new CommentsAdapter(commentsList, this);
+        commentsAdapter = new CommentsAdapter(commentsList);
         commentsRecyclerView.setAdapter(commentsAdapter);
 
         Event event = (Event) getIntent().getSerializableExtra("event");
@@ -184,6 +202,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 // Comment was successfully written
                 Log.d("Comment", "Comment posted: " + commentText);
+                loadComments(eventId);
             } else {
                 // Handle the error
                 Log.e("Comment", "Failed to post comment.", task.getException());
@@ -192,21 +211,25 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void loadComments(String eventId) {
-        DatabaseReference commentsRef = FirebaseDatabase.getInstance().getReference("comments").child(eventId);
+        DatabaseReference commentsRef = DatabaseConnector.getInstance().getEventsReference().child(eventId).child("comments");
 
         commentsRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 commentsList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Comment comment = snapshot.getValue(Comment.class);
+                    Comment comment = new Comment();
+                    comment.setCommentId(snapshot.child("commentId").getValue(String.class));
+                    comment.setCommentText(snapshot.child("commentText").getValue(String.class));
+                    comment.setTimestamp(snapshot.child("timestamp").getValue(Long.class));
                     commentsList.add(comment);
                 }
-                commentsAdapter.notifyDataSetChanged();
+                commentsAdapter.updateList(commentsList);
+                commentsRecyclerView.setAdapter(commentsAdapter);
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("EventDetailsActivity", "Failed to load comments.", databaseError.toException());
             }
         });
