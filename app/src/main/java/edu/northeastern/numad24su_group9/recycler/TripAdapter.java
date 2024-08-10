@@ -14,10 +14,15 @@ import edu.northeastern.numad24su_group9.R;
 import edu.northeastern.numad24su_group9.model.Trip;
 
 public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
-    private final List<Trip> trips;
+    private List<Trip> trips;
     private TripAdapter.OnItemClickListener listener;
+    private TripAdapter.OnItemSelectListener selectListener;
 
-    public TripAdapter(List<Trip> trips) {
+
+    public TripAdapter() {
+    }
+
+    public void updateTrips(List<Trip> trips) {
         this.trips = trips;
     }
 
@@ -33,8 +38,16 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
         void onItemClick(Trip trip);
     }
 
+    public interface OnItemSelectListener {
+        void onItemSelect(Trip trip);
+    }
+
     public void setOnItemClickListener(TripAdapter.OnItemClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setOnItemSelectListener(TripAdapter.OnItemSelectListener listener) {
+        this.selectListener = listener;
     }
 
     @Override
@@ -45,12 +58,22 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
         holder.tripDateTextView.setText(trip.getStartDate());
         holder.tripDestinationTextView.setText(trip.getLocation());
         holder.itemView.setOnClickListener(v -> handleTripClick(trip));
+        holder.itemView.setOnLongClickListener(v -> {
+            handleTripSelect(trip);
+            return true;
+        });
 
     }
 
     @Override
     public int getItemCount() {
         return trips.size();
+    }
+
+    private void handleTripSelect(Trip trip) {
+        if (selectListener != null) {
+            selectListener.onItemSelect(trip);
+        }
     }
 
     private void handleTripClick(Trip trip) {

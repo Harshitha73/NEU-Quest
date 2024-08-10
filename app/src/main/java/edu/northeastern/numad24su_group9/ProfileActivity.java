@@ -28,6 +28,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
@@ -42,6 +44,7 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import edu.northeastern.numad24su_group9.firebase.repository.database.TripRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
@@ -282,6 +285,49 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private void updateTripUI() {
+        RecyclerView tripRecyclerView = findViewById(R.id.trips_recycler_view);
+        tripRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        TripAdapter tripAdapter = new TripAdapter();
+        tripAdapter.updateTrips(trips);
+        tripAdapter.setOnItemClickListener((trip) -> {
+            Intent intent = new Intent(ProfileActivity.this, TripDetailsActivity.class);
+            intent.putExtra("trip", trip);
+            startActivity(intent);
+            finish();
+        });
+        tripAdapter.setOnItemSelectListener(this::removeTrip);
+        tripRecyclerView.setAdapter(tripAdapter);
+    }
+
+    private void removeTrip(Trip trip) {
+        TripRepository tripRepository = new TripRepository();
+        DatabaseReference tripRef = tripRepository.getTripRef();
+
+        tripRef.child(trip.getTripID()).removeValue();
+
+        UserRepository userRepository = new UserRepository(uid);
+        DatabaseReference userRef = userRepository.getUserRef();
+        Task<DataSnapshot> task = userRef.child("plannedTrips").get();
+
+        task.addOnSuccessListener(dataSnapshot -> {
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot tripSnapshot : dataSnapshot.getChildren()) {
+                    if (Objects.equals(tripSnapshot.getValue(String.class), trip.getTripID())) {
+                        tripSnapshot.getRef().removeValue();
+                        break;
+                    }
+                }
+            }
+        });
+
+
+
+
+        trips.remove(trip);
+        updateTripUI();
+    }
+
     public void getTrips() {
         TripRepository tripRepository = new TripRepository();
         trips = new ArrayList<>();
@@ -311,16 +357,7 @@ public class ProfileActivity extends AppCompatActivity {
                     trips.add(trip);
                 }
 
-                RecyclerView tripRecyclerView = findViewById(R.id.trips_recycler_view);
-                tripRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-                TripAdapter tripAdapter = new TripAdapter(trips);
-                tripAdapter.setOnItemClickListener((trip) -> {
-                    Intent intent = new Intent(ProfileActivity.this, TripDetailsActivity.class);
-                    intent.putExtra("trip", trip);
-                    startActivity(intent);
-                    finish();
-                });
-                tripRecyclerView.setAdapter(tripAdapter);
+                updateTripUI();
             }
         }).addOnFailureListener(Throwable::printStackTrace);
     }
