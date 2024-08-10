@@ -216,6 +216,7 @@
         app:menu="@menu/bottom_nav_menu"
         android:background="#FFFFFF"
         app:itemIconTint="@color/text_color"
-        app:itemTextColor="@color/text_color" />
+        app:itemTextColor="@color/text_color"
+        tools:ignore="VisualLintBottomNav" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

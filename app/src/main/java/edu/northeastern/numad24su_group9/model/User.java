@@ -12,17 +12,17 @@ public class User {
     private List<String> eventsAttended; // list of event IDs
     private List<String> interests; // list of interests
     private String campus;
-    public String getCampus() {
-        return campus;
-    }
     public Boolean isAdmin;
+
+    public User(){}
 
     public void setCampus(String campus) {
         this.campus = campus;
     }
 
-
-    public User(){}
+    public String getCampus() {
+        return campus;
+    }
 
     public String getUserID() {
         return userID;

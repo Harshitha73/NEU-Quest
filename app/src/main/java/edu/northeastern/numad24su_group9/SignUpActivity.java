@@ -62,7 +62,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void handleSignUp() {
-        String name = nameEditText.getText().toString().trim();
+        name = nameEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
         campus = campusSpinner.getSelectedItem().toString();
@@ -80,7 +80,6 @@ public class SignUpActivity extends AppCompatActivity {
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(name)
                                     .build();
-                            Log.d("name:" , name);
                             user.updateProfile(profileUpdates)
                                     .addOnCompleteListener(profileUpdateTask -> {
                                         if (profileUpdateTask.isSuccessful()) {

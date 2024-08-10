@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import edu.northeastern.numad24su_group9.firebase.AuthConnector;
 import edu.northeastern.numad24su_group9.firebase.repository.database.TripRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.storage.UserProfileRepository;
@@ -440,27 +441,38 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void deleteAccount() {
+
+        // Delete from Firebase Authentication
         if (firebaseUser != null) {
-            String uid = firebaseUser.getUid();
+            firebaseAuth.signOut();
             new Thread(() -> {
-                databaseReference.child("Users").child(uid).removeValue().addOnCompleteListener(task -> {
+                TripRepository tripRepository = new TripRepository();
+                DatabaseReference tripRef = tripRepository.getTripRef();
+                user.getTrips().forEach(tripID -> tripRef.child(tripID).removeValue());
+
+                UserRepository userRepository = new UserRepository(uid);
+                DatabaseReference userRef = userRepository.getUserRef();
+                userRef.removeValue().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        firebaseUser.delete().addOnCompleteListener(task1 -> {
-                            if (task1.isSuccessful()) {
-                                runOnUiThread(() -> {
-                                    Toast.makeText(ProfileActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                        // Delete the user
+                        firebaseUser.delete()
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        // User has been successfully deleted
+                                        runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "User data deleted successfully", Toast.LENGTH_SHORT).show());
+                                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        // An error occurred while deleting the user
+                                        Log.e("Firebase Auth", "Error deleting user: " + Objects.requireNonNull(task.getException()).getMessage());
+                                    }
                                 });
-                            } else {
-                                runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Failed to delete account", Toast.LENGTH_SHORT).show());
-                            }
-                        });
                     } else {
                         runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Failed to delete user data", Toast.LENGTH_SHORT).show());
                     }
                 });
+
             }).start();
         }
     }
