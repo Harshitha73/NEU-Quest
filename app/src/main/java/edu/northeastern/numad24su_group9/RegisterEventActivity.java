@@ -191,7 +191,7 @@ public class RegisterEventActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_app_icon) // Replace with your event icon
+                .setSmallIcon(R.drawable.ic_stat_name)
                 .setContentTitle("Event Created: " + event.getTitle())
                 .setContentText("Location: " + event.getLocation())
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
