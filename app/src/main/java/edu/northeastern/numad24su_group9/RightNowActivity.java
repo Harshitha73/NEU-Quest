@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +28,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DataSnapshot;
 
+import edu.northeastern.numad24su_group9.cache.EventCache;
 import edu.northeastern.numad24su_group9.checks.LocationChecker;
 import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.gemini.GeminiClient;
@@ -144,69 +147,88 @@ public class RightNowActivity extends AppCompatActivity {
     }
 
     public void getEvents() {
-        allEvents = new ArrayList<>();
-        EventRepository eventRepository = new EventRepository();
+        EventCache eventCache = EventCache.getInstance();
 
-        Task<DataSnapshot> task = eventRepository.getEventRef().get();
-        task.addOnSuccessListener(dataSnapshot -> {
-            if (dataSnapshot.exists()) {
-                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
-                    Event event = new Event();
-                    event.setEventID(eventSnapshot.getKey());
-                    event.setTitle(eventSnapshot.child("title").getValue(String.class));
-                    event.setImage(eventSnapshot.child("image").getValue(String.class));
-                    event.setDescription(eventSnapshot.child("description").getValue(String.class));
-                    event.setStartTime(eventSnapshot.child("startTime").getValue(String.class));
-                    event.setStartDate(eventSnapshot.child("startDate").getValue(String.class));
-                    event.setEndTime(eventSnapshot.child("endTime").getValue(String.class));
-                    event.setEndDate(eventSnapshot.child("endDate").getValue(String.class));
-                    event.setPrice(eventSnapshot.child("price").getValue(String.class));
-                    event.setLocation(eventSnapshot.child("location").getValue(String.class));
-                    event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
-                    event.setIsReported(eventSnapshot.child("isReported").getValue(Boolean.class));
-                    allEvents.add(event);
+        // Check if the events are already cached
+        if (!eventCache.getCachedEvents().isEmpty()) {
+            allEvents = eventCache.getCachedEvents();
+            getUserRegistrationPattern();
+            return;
+        }
+
+        new Thread(() -> {
+            allEvents = new ArrayList<>();
+            EventRepository eventRepository = new EventRepository();
+
+            Task<DataSnapshot> task = eventRepository.getEventRef().get();
+            task.addOnSuccessListener(dataSnapshot -> {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+                        Event event = new Event();
+                        // Populate the event object
+                        event.setEventID(eventSnapshot.getKey());
+                        event.setTitle(eventSnapshot.child("title").getValue(String.class));
+                        event.setImage(eventSnapshot.child("image").getValue(String.class));
+                        event.setDescription(eventSnapshot.child("description").getValue(String.class));
+                        event.setStartTime(eventSnapshot.child("startTime").getValue(String.class));
+                        event.setStartDate(eventSnapshot.child("startDate").getValue(String.class));
+                        event.setEndTime(eventSnapshot.child("endTime").getValue(String.class));
+                        event.setEndDate(eventSnapshot.child("endDate").getValue(String.class));
+                        event.setPrice(eventSnapshot.child("price").getValue(String.class));
+                        event.setLocation(eventSnapshot.child("location").getValue(String.class));
+                        event.setRegisterLink(eventSnapshot.child("registerLink").getValue(String.class));
+                        event.setIsReported(eventSnapshot.child("isReported").getValue(Boolean.class));
+                        allEvents.add(event);
+                    }
+
+                    // Cache the events
+                    eventCache.addEvents(allEvents);
+
+                    // Update the UI on the main thread
+                    runOnUiThread(this::getUserRegistrationPattern);
                 }
-                Log.e("RecommendationAlgorithm", "Events retrieved");
-                getUserRegistrationPattern();
-            }
-        }).addOnFailureListener(Throwable::printStackTrace);
+            }).addOnFailureListener(e -> {
+                // Handle the failure case on the main thread
+                runOnUiThread(e::printStackTrace);
+            });
+        }).start();
     }
 
     // Get user registration pattern from firebase
     private void getUserRegistrationPattern() {
+        Runnable getUserRegistrationPatternTask = () -> {
+            User user = new User();
+            user.setUserID(uid);
 
-        Log.e("RecommendationAlgorithm", "Getting user registration pattern");
+            UserRepository userRepository = new UserRepository(uid);
+            Task<DataSnapshot> task = userRepository.getUserRef().get();
+            task.addOnSuccessListener(dataSnapshot -> {
+                if (dataSnapshot.exists()) {
+                    List<String> userInterests = new ArrayList<>();
+                    for (DataSnapshot interestSnapshot : dataSnapshot.child("interests").getChildren()) {
+                        String interest = interestSnapshot.getValue(String.class);
+                        userInterests.add(interest);
+                    }
 
-        User user = new User();
-        user.setUserID(uid);
-
-        UserRepository userRepository = new UserRepository(uid);
-        Task<DataSnapshot> task = userRepository.getUserRef().get();
-        task.addOnSuccessListener(dataSnapshot -> {
-            if (dataSnapshot.exists()) {
-                List<String> userInterests = new ArrayList<>();
-                for (DataSnapshot interestSnapshot : dataSnapshot.child("interests").getChildren()) {
-                    String interest = interestSnapshot.getValue(String.class);
-                    userInterests.add(interest);
+                    List<String> eventsAttendedIDs = new ArrayList<>();
+                    for (DataSnapshot tripSnapshot : dataSnapshot.child("eventsAttended").getChildren()) {
+                        String eventID = tripSnapshot.getValue(String.class);
+                        eventsAttendedIDs.add(eventID);
+                    }
+                    generateEventRecommendations(eventsAttendedIDs, userInterests);
                 }
+            }).addOnFailureListener(e -> {
+                // Handle any exceptions that occur during the database query
+                Log.e("UserRepository", "Error retrieving user data: " + e.getMessage());
+            });
+        };
 
-                List<String> eventsAttendedIDs = new ArrayList<>();
-                for (DataSnapshot tripSnapshot : dataSnapshot.child("eventsAttended").getChildren()) {
-                    String eventID = tripSnapshot.getValue(String.class);
-                    eventsAttendedIDs.add(eventID);
-                }
-                Log.e("RecommendationAlgorithm", "User registration pattern retrieved");
-                generateEventRecommendations(eventsAttendedIDs, userInterests);
-            }
-        }).addOnFailureListener(e -> {
-            // Handle any exceptions that occur during the database query
-            Log.e("UserRepository", "Error retrieving user data: " + e.getMessage());
-        });
+        // Post the getUserRegistrationPatternTask to the same background thread as getEvents()
+        new Thread(getUserRegistrationPatternTask).start();
     }
 
     // Generate event recommendations based on user registration pattern
     private void generateEventRecommendations(List<String> eventsAttendedIDs, List<String> userInterests) {
-        Log.e("RecommendationAlgorithm", "Generating event recommendations");
         List<String> eventsAttended = new ArrayList<>();
         List<Event> recommendedEvents = new ArrayList<>();
 
@@ -231,7 +253,6 @@ public class RightNowActivity extends AppCompatActivity {
             @SuppressLint("RestrictedApi")
             @Override
             public void onSuccess(GenerateContentResponse result) {
-                Log.e("RecommendationAlgorithm", "Success");
                 List<String> recommendedEventTitles = extractTitles(result.getText());
                 for (String title : recommendedEventTitles) {
                     for (Event event : allEvents) {
@@ -248,7 +269,6 @@ public class RightNowActivity extends AppCompatActivity {
                 }
 
                 runOnUiThread(() -> {
-                    Log.e("RecommendationAlgorithm", "Recommended events: " + recommendedEvents.toString() + "");
                     progressBar.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
                     updateUI(recommendedEvents);
@@ -290,16 +310,25 @@ public class RightNowActivity extends AppCompatActivity {
     }
 
     private void filterEvents(String query) {
-        List<Event> filteredEvents = new ArrayList<>();
-        for (Event event : allEvents) {
-            if (event.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    event.getDescription().toLowerCase().contains(query.toLowerCase()) ||
-                        LocationChecker.isSameLocation(event.getLocation(), query.toLowerCase())) {
-                filteredEvents.add(event);
+        HandlerThread handlerThread = new HandlerThread("FilterEventsThread");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+
+        handler.post(() -> {
+            List<Event> filteredEvents = new ArrayList<>();
+            for (Event event : allEvents) {
+                if (event.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                        event.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                    filteredEvents.add(event);
+                }
             }
-        }
-        eventAdapter.updateData(filteredEvents);
-        recyclerView.setAdapter(eventAdapter);
+
+            // Update the UI on the main thread
+            runOnUiThread(() -> {
+                eventAdapter.updateData(filteredEvents);
+                recyclerView.setAdapter(eventAdapter);
+            });
+        });
     }
 
     @SuppressLint("MissingSuperCall")

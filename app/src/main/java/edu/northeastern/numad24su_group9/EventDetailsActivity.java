@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -215,28 +217,43 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void loadComments(String eventId) {
-        DatabaseReference commentsRef = DatabaseConnector.getInstance().getEventsReference().child(eventId).child("comments");
+        HandlerThread handlerThread = new HandlerThread("CommentsHandlerThread");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
 
-        commentsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                commentsList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Comment comment = new Comment();
-                    comment.setCommentId(snapshot.child("commentId").getValue(String.class));
-                    comment.setCommentText(snapshot.child("commentText").getValue(String.class));
-                    comment.setTimestamp(snapshot.child("timestamp").getValue(Long.class));
-                    comment.setCommenterName(snapshot.child("commenterName").getValue(String.class));
-                    commentsList.add(0, comment);
+        handler.post(() -> {
+            DatabaseReference commentsRef = DatabaseConnector.getInstance().getEventsReference().child(eventId).child("comments");
+
+            commentsRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    List<Comment> newCommentsList = new ArrayList<>();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Comment comment = new Comment();
+                        comment.setCommentId(snapshot.child("commentId").getValue(String.class));
+                        comment.setCommentText(snapshot.child("commentText").getValue(String.class));
+                        comment.setTimestamp(snapshot.child("timestamp").getValue(Long.class));
+                        comment.setCommenterName(snapshot.child("commenterName").getValue(String.class));
+                        newCommentsList.add(0, comment);
+                    }
+
+                    // Update the UI on the main thread
+                    runOnUiThread(() -> {
+                        commentsList.clear();
+                        commentsList.addAll(newCommentsList);
+                        commentsAdapter.updateList(commentsList);
+                        commentsRecyclerView.setAdapter(commentsAdapter);
+                    });
                 }
-                commentsAdapter.updateList(commentsList);
-                commentsRecyclerView.setAdapter(commentsAdapter);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("EventDetailsActivity", "Failed to load comments.", databaseError.toException());
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle the failure case on the main thread
+                    runOnUiThread(() -> {
+                        Log.e("EventDetailsActivity", "Failed to load comments.", databaseError.toException());
+                    });
+                }
+            });
         });
     }
 

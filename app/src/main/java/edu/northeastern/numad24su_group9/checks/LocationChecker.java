@@ -1,7 +1,5 @@
 package edu.northeastern.numad24su_group9.checks;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,7 +9,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.concurrent.TimeUnit;
 
 public class LocationChecker {
     private static final String NOMINATIM_API_URL = "https://nominatim.openstreetmap.org/search";
@@ -23,8 +20,6 @@ public class LocationChecker {
             String normalizedLocation2 = getNormalizedLocation(location2);
 
             // Compare the normalized locations
-            Log.e("LocationChecker", "Normalized location 1: " + normalizedLocation1);
-            Log.e("LocationChecker", "Normalized location 2: " + normalizedLocation2);
             return normalizedLocation1.equalsIgnoreCase(normalizedLocation2);
         } catch (Exception e) {
             e.printStackTrace();
