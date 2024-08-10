@@ -35,6 +35,7 @@ import java.util.List;
 
 import edu.northeastern.numad24su_group9.firebase.DatabaseConnector;
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
+import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
 import edu.northeastern.numad24su_group9.model.Comment;
 import edu.northeastern.numad24su_group9.model.Event;
@@ -131,6 +132,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         EventImageRepository eventImageRepository = new EventImageRepository();
         Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(eventImageView);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        String uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
+
+        UserRepository userRepository = new UserRepository(uid);
+        DatabaseReference userEventAttendedRef = userRepository.getUserRef().child("eventsAttended");
+
         // Set the report button click listener
         reportButton.setOnClickListener(v -> {
             event.setIsReported(true);
@@ -141,11 +148,41 @@ public class EventDetailsActivity extends AppCompatActivity {
             eventRef.setValue(event);
         });
 
+        // Check if registration link is valid
+        if (event.getRegisterLink() == null) {
+            registerButton.setVisibility(View.INVISIBLE);
+        } else {
+            // If event already attended by user, don't show register button
+            userEventAttendedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    boolean valueExists = false;
+                    for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                        if (childSnapshot.getValue(String.class).equals(event.getEventID())) {
+                            valueExists = true;
+                            break;
+                        }
+                    }
+
+                    if (valueExists) {
+                        registerButton.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("EventDetailsActivity", "Error with registration: " + error.getMessage());
+                }
+            });
+        }
+
         // Set the register button click listener
         registerButton.setOnClickListener(v -> {
             // Launch the browser or an in-app registration flow with the registerUrl
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(event.getRegisterLink()));
             try {
+                // User likes this event. Save it in the database
+                userEventAttendedRef.push().setValue(event.getEventID());
                 startActivity(intent);
                 finish();
             }
@@ -164,10 +201,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                         .show();
             }
         });
-
-        if(event.getRegisterLink() == null) {
-            registerButton.setVisibility(View.INVISIBLE);
-        }
 
         postCommentButton.setOnClickListener(v -> {
             String commentText = commentInput.getText().toString().trim();
