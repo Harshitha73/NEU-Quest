@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -34,11 +35,14 @@ import java.util.List;
 
 import edu.northeastern.numad24su_group9.firebase.DatabaseConnector;
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
+import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
 import edu.northeastern.numad24su_group9.model.Comment;
 import edu.northeastern.numad24su_group9.model.Event;
 import edu.northeastern.numad24su_group9.recycler.CommentsAdapter;
 
+
+// Comments will not post :(
 public class EventDetailsActivity extends AppCompatActivity {
 
     private String previousActivity;
@@ -113,7 +117,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             reportButton.setVisibility(View.GONE);
         }
 
-        // On Location click, open maps
+        //On Location click, open maps
         showLocationButton.setOnClickListener(v -> {
             if (!event.getLocation().isEmpty()) {
                 // Open the Maps application with the specified address
@@ -128,6 +132,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         EventImageRepository eventImageRepository = new EventImageRepository();
         Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(eventImageView);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        String uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
+
+        UserRepository userRepository = new UserRepository(uid);
+        DatabaseReference userEventAttendedRef = userRepository.getUserRef().child("eventsAttended");
+
         // Set the report button click listener
         reportButton.setOnClickListener(v -> {
             event.setIsReported(true);
@@ -138,11 +148,41 @@ public class EventDetailsActivity extends AppCompatActivity {
             eventRef.setValue(event);
         });
 
+        // Check if registration link is valid
+        if (event.getRegisterLink() == null) {
+            registerButton.setVisibility(View.INVISIBLE);
+        } else {
+            // If event already attended by user, don't show register button
+            userEventAttendedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    boolean valueExists = false;
+                    for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                        if (childSnapshot.getValue(String.class).equals(event.getEventID())) {
+                            valueExists = true;
+                            break;
+                        }
+                    }
+
+                    if (valueExists) {
+                        registerButton.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("EventDetailsActivity", "Error with registration: " + error.getMessage());
+                }
+            });
+        }
+
         // Set the register button click listener
         registerButton.setOnClickListener(v -> {
             // Launch the browser or an in-app registration flow with the registerUrl
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(event.getRegisterLink()));
             try {
+                // User likes this event. Save it in the database
+                userEventAttendedRef.push().setValue(event.getEventID());
                 startActivity(intent);
                 finish();
             }
@@ -150,15 +190,17 @@ public class EventDetailsActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Registration URL Error")
                         .setMessage("There is an error with the registration link: " + e)
-                        .setPositiveButton("Dismiss", (dialog, which) -> dialog.dismiss())
+                        .setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Handle OK button click
+                                dialog.dismiss();
+                            }
+                        })
                         .create()
                         .show();
             }
         });
-
-        if(event.getRegisterLink() == null) {
-            registerButton.setVisibility(View.INVISIBLE);
-        }
 
         postCommentButton.setOnClickListener(v -> {
             String commentText = commentInput.getText().toString().trim();
@@ -246,14 +288,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
         });
-
-        // Automatically navigate back to RightNowActivity after a brief delay
-        new android.os.Handler().postDelayed(() -> {
-            Intent intent = new Intent(EventDetailsActivity.this, RightNowActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        }, 3000); // 3-second delay to simulate brief viewing of event details
     }
 
     @Override

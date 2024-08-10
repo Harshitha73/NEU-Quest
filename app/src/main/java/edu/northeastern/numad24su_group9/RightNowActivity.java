@@ -147,14 +147,14 @@ public class RightNowActivity extends AppCompatActivity {
     }
 
     public void getEvents() {
-//        EventCache eventCache = EventCache.getInstance();
-//
-//        // Check if the events are already cached
-//        if (!eventCache.getCachedEvents().isEmpty()) {
-//            allEvents = eventCache.getCachedEvents();
-//            getUserRegistrationPattern();
-//            return;
-//        }
+        EventCache eventCache = EventCache.getInstance();
+
+        // Check if the events are already cached
+        if (!eventCache.getCachedEvents().isEmpty()) {
+            allEvents = eventCache.getCachedEvents();
+            getUserRegistrationPattern();
+            return;
+        }
 
         new Thread(() -> {
             allEvents = new ArrayList<>();
@@ -182,7 +182,7 @@ public class RightNowActivity extends AppCompatActivity {
                     }
 
                     // Cache the events
-//                    eventCache.addEvents(allEvents);
+                    eventCache.addEvents(allEvents);
 
                     // Update the UI on the main thread
                     runOnUiThread(this::getUserRegistrationPattern);
@@ -297,7 +297,7 @@ public class RightNowActivity extends AppCompatActivity {
     private void updateUI(List<Event> events) {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        eventAdapter = new EventAdapter(this);
+        eventAdapter = new EventAdapter();
         eventAdapter.updateData(events);
         eventAdapter.setOnItemClickListener((event) -> {
             Intent intent = new Intent(RightNowActivity.this, EventDetailsActivity.class);
