@@ -147,14 +147,14 @@ public class RightNowActivity extends AppCompatActivity {
     }
 
     public void getEvents() {
-        EventCache eventCache = EventCache.getInstance();
-
-        // Check if the events are already cached
-        if (!eventCache.getCachedEvents().isEmpty()) {
-            allEvents = eventCache.getCachedEvents();
-            getUserRegistrationPattern();
-            return;
-        }
+//        EventCache eventCache = EventCache.getInstance();
+//
+//        // Check if the events are already cached
+//        if (!eventCache.getCachedEvents().isEmpty()) {
+//            allEvents = eventCache.getCachedEvents();
+//            getUserRegistrationPattern();
+//            return;
+//        }
 
         new Thread(() -> {
             allEvents = new ArrayList<>();
@@ -182,7 +182,7 @@ public class RightNowActivity extends AppCompatActivity {
                     }
 
                     // Cache the events
-                    eventCache.addEvents(allEvents);
+//                    eventCache.addEvents(allEvents);
 
                     // Update the UI on the main thread
                     runOnUiThread(this::getUserRegistrationPattern);

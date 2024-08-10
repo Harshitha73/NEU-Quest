@@ -26,7 +26,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -40,8 +39,6 @@ import edu.northeastern.numad24su_group9.model.Comment;
 import edu.northeastern.numad24su_group9.model.Event;
 import edu.northeastern.numad24su_group9.recycler.CommentsAdapter;
 
-
-// Comments will not post :(
 public class EventDetailsActivity extends AppCompatActivity {
 
     private String previousActivity;
@@ -116,7 +113,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             reportButton.setVisibility(View.GONE);
         }
 
-        //On Location click, open maps
+        // On Location click, open maps
         showLocationButton.setOnClickListener(v -> {
             if (!event.getLocation().isEmpty()) {
                 // Open the Maps application with the specified address
@@ -153,13 +150,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Registration URL Error")
                         .setMessage("There is an error with the registration link: " + e)
-                        .setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // Handle OK button click
-                                dialog.dismiss();
-                            }
-                        })
+                        .setPositiveButton("Dismiss", (dialog, which) -> dialog.dismiss())
                         .create()
                         .show();
             }
@@ -255,6 +246,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
         });
+
+        // Automatically navigate back to RightNowActivity after a brief delay
+        new android.os.Handler().postDelayed(() -> {
+            Intent intent = new Intent(EventDetailsActivity.this, RightNowActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }, 3000); // 3-second delay to simulate brief viewing of event details
     }
 
     @Override
