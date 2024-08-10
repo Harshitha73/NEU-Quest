@@ -19,6 +19,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -165,6 +171,8 @@ public class RegisterEventActivity extends AppCompatActivity {
 
             eventRef.setValue(event);
 
+            triggerNotification(event);
+
             Intent intent = new Intent(RegisterEventActivity.this, RightNowActivity.class);
             startActivity(intent);
             finish();
@@ -172,6 +180,26 @@ public class RegisterEventActivity extends AppCompatActivity {
         else {
             Toast.makeText(this, "Event dates and times must not be empty", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void triggerNotification(Event event) {
+        NotificationHelper.createNotificationChannel(this);
+
+        Intent intent = new Intent(this, RightNowActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_app_icon) // Replace with your event icon
+                .setContentTitle("Event Created: " + event.getTitle())
+                .setContentText("Location: " + event.getLocation())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 
     @SuppressLint("IntentReset")
