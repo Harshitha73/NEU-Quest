@@ -12,9 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
-import com.squareup.picasso.Picasso;
-
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
