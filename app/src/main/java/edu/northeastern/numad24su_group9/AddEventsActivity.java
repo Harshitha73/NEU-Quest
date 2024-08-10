@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -26,25 +25,42 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.northeastern.numad24su_group9.checks.LocationChecker;
+import edu.northeastern.numad24su_group9.firebase.DatabaseConnector;
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
+import edu.northeastern.numad24su_group9.firebase.repository.database.GeneratedEventRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.database.TripRepository;
 import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.gemini.GeminiClient;
 import edu.northeastern.numad24su_group9.model.Event;
+import edu.northeastern.numad24su_group9.model.GeneratedEvent;
 import edu.northeastern.numad24su_group9.model.Trip;
+import edu.northeastern.numad24su_group9.model.User;
 import edu.northeastern.numad24su_group9.recycler.EventAdapter;
+import edu.northeastern.numad24su_group9.recycler.GeneratedEventsAdapter;
 
 public class AddEventsActivity extends AppCompatActivity {
     private List<Event> eventData;
     private List<Event> selectedEvents;
+    private List<GeneratedEvent> selectedGeneratedEvents;
     private EventAdapter eventAdapter;
+    private List<GeneratedEvent> generatedEvents;
+    private List<String> selectedEventIDs = new ArrayList<>();
+    private GeneratedEventsAdapter generatedEventsAdapter;
     private Trip trip;
 
     @Override
@@ -55,7 +71,9 @@ public class AddEventsActivity extends AppCompatActivity {
         trip = (Trip) getIntent().getSerializableExtra("trip");
 
         selectedEvents = new ArrayList<>();
+        selectedGeneratedEvents = new ArrayList<>();
         eventAdapter = new EventAdapter();
+        generatedEventsAdapter = new GeneratedEventsAdapter();
 
         // Find the buttons
         SearchView searchView = findViewById(R.id.searchView);
@@ -82,33 +100,57 @@ public class AddEventsActivity extends AppCompatActivity {
         if (bottomNavigationView == null) {
             Log.e("RightNowActivity", "bottomNavigationView is null");
         } else {
-            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    int itemId = item.getItemId();
-                    if (itemId == R.id.navigation_home) {
-                        startActivity(new Intent(AddEventsActivity.this, RightNowActivity.class));
-                        return true;
-                    } else if (itemId == R.id.navigation_budget) {
-                        startActivity(new Intent(AddEventsActivity.this, PlanningTripActivity.class));
-                        return true;
-                    } else if (itemId == R.id.navigation_profile) {
-                        startActivity(new Intent(AddEventsActivity.this, ProfileActivity.class));
-                        return true;
-                    }
-                    return false;
+            bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.navigation_home) {
+                    startActivity(new Intent(AddEventsActivity.this, RightNowActivity.class));
+                    return true;
+                } else if (itemId == R.id.navigation_budget) {
+                    startActivity(new Intent(AddEventsActivity.this, PlanningTripActivity.class));
+                    return true;
+                } else if (itemId == R.id.navigation_profile) {
+                    startActivity(new Intent(AddEventsActivity.this, ProfileActivity.class));
+                    return true;
                 }
+                return false;
             });
         }
     }
 
     public void confirmSelection(View view) {
         if (selectedEvents.isEmpty()) {
-            Toast.makeText(this, "Please select at least one item", Toast.LENGTH_SHORT).show();
-        } else {
+            if (selectedGeneratedEvents.isEmpty()) {
+                Toast.makeText(this, "Please select at least one item", Toast.LENGTH_SHORT).show();
+            } else {
+                for (GeneratedEvent generatedEvent : selectedGeneratedEvents) {
+                    selectedEventIDs.add(generatedEvent.getId());
+                    DatabaseReference eventRef = DatabaseConnector.getInstance().getGeneratedEventsReference().child(generatedEvent.getId());
+                    eventRef.setValue(generatedEvent);
+                }
+                trip.setEventIDs(selectedEventIDs);
 
-            // Add the selected events to the trip
-            List<String> selectedEventIDs = new ArrayList<>();
+                SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                String uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
+
+                // Get a reference to the user's data in the database
+                UserRepository userRepository = new UserRepository(uid);
+                DatabaseReference userRef = userRepository.getUserRef();
+                DatabaseReference userItineraryRef = userRef.child("plannedTrips").push();
+                userItineraryRef.setValue(trip.getTripID());
+
+                // Save trip in the database
+                TripRepository tripRepository = new TripRepository();
+                DatabaseReference tripRef = tripRepository.getTripRef().child(trip.getTripID());
+                tripRef.setValue(trip);
+
+                Toast.makeText(this, "Trip saved successfully", Toast.LENGTH_SHORT).show();
+                finish();
+
+                Intent intent = new Intent(AddEventsActivity.this, RightNowActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        } else {
             for (Event event : selectedEvents) {
                 selectedEventIDs.add(event.getEventID());
             }
@@ -194,38 +236,99 @@ public class AddEventsActivity extends AppCompatActivity {
                         finish();
                     });
                     builder.setNegativeButton("No", (dialog, which) -> {
-                        // Ask Gemini to provide event recommendations
-                        // Create a ThreadPoolExecutor
-                        int numThreads = Runtime.getRuntime().availableProcessors();
-                        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(numThreads);
 
-                        GeminiClient geminiClient = new GeminiClient();
+                        SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                        String uid = sharedPreferences.getString(AppConstants.UID_KEY, "");
 
-                        Log.e("RecommendationAlgorithm", "Generating trip : " + trip);
-                        ListenableFuture<GenerateContentResponse> response = geminiClient.generateResult("Can you recommend a trip for following trip details: " + trip);
+                        // Get a reference to the user's data in the database
+                        User user = new User();
+                        UserRepository userRepository = new UserRepository(uid);
 
-                        // Generate trip name using Gemini API
-                        Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
-                            @SuppressLint("RestrictedApi")
-                            @Override
-                            public void onSuccess(GenerateContentResponse result) {
-                                Log.e("RecommendationAlgorithm", "Success");
-                                Log.e("RecommendationAlgorithm", Objects.requireNonNull(result.getText()));
+                        Task<DataSnapshot> task1 = userRepository.getUserRef().get();
+                        task1.addOnSuccessListener(dataSnapshot1 -> {
+                            if (dataSnapshot1.exists()) {
+                                List<String> interests = new ArrayList<>();
+                                for (DataSnapshot tripSnapshot : dataSnapshot1.child("interests").getChildren()) {
+                                    String interest = tripSnapshot.getValue(String.class);
+                                    interests.add(interest);
+                                }
+                                user.setInterests(interests);
                             }
+                            // Ask Gemini to provide event recommendations
+                            // Create a ThreadPoolExecutor
+                            int numThreads = Runtime.getRuntime().availableProcessors();
+                            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(numThreads);
 
-                            @Override
-                            public void onFailure(@NonNull Throwable t) {
-                                // Handle the failure on the main thread
-                                Log.e("RecommendationAlgorithm", "Error: " + t.getMessage());
-                            }
-                        }, executor);
-                        finish();
+                            GeminiClient geminiClient = new GeminiClient();
+
+                            Toast.makeText(this, "Generating suggested events", Toast.LENGTH_SHORT).show();
+                            String query = "can you suggest me places in " + trip.getLocation() + "? My budget is " + trip.getMaxBudget() + ", in which I wish to include meals and transport. My date and time of availability is " + trip.getStartDate() + " " + trip.getStartTime() +" to " + trip.getEndDate() + " " + trip.getEndTime() + ". My interests are " + user.getInterests() + " I want the name of the place, suggested time and date to visit, along with brief description. For meals I want suggested place name, suggested cuisine, and expected costs. For transport I want the suggestion of the transport mode that will fall within budget, and the time taken. I want this is a consistent readable format with no Day 1 or Day 2 details. Meantion details using titles 'place', 'time', 'description', 'date";
+                            ListenableFuture<GenerateContentResponse> response = geminiClient.generateResult(query);
+
+                            // Generate trip name using Gemini API
+                            Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
+                                @SuppressLint("RestrictedApi")
+                                @Override
+                                public void onSuccess(GenerateContentResponse result) {
+                                    runOnUiThread(() -> {
+                                        extractInfo(result.getText());
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(@NonNull Throwable t) {
+                                    // Handle the failure on the main thread
+                                    Log.e("RecommendationAlgorithm", "Error: " + t.getMessage());
+                                }
+                            }, executor);
+                        }).addOnFailureListener(e -> Log.e("UserRepository", "Error retrieving user data: " + e.getMessage()));
                     });
                     builder.show();
                 }
             }
         }).addOnFailureListener(Throwable::printStackTrace);
     }
+
+    public void extractInfo(String text) {
+        generatedEvents = new ArrayList<>();
+        String[] lines = text.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i].trim();
+            if (line.startsWith("**Place:**")) {
+                GeneratedEvent generatedEvent = new GeneratedEvent();
+                generatedEvent.setId("generatedEvent_" + UUID.randomUUID().toString());
+                String place = line.substring(10).trim();
+                generatedEvent.setTitle(place);
+                String description = lines[i].substring(14).trim();
+                generatedEvent.setDescription(description);
+                generatedEvents.add(generatedEvent);
+            }
+        }
+
+        if (generatedEvents.isEmpty()) {
+            Toast.makeText(AddEventsActivity.this, "No events could be created", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        updateUIGenerated(generatedEvents);
+
+    }
+
+    private void updateUIGenerated(List<GeneratedEvent> generatedEvents) {
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        generatedEventsAdapter = new GeneratedEventsAdapter();
+        generatedEventsAdapter.updateData(generatedEvents);
+        generatedEventsAdapter.setOnItemSelectListener((event) -> {
+            if (selectedGeneratedEvents.contains(event)) {
+                selectedGeneratedEvents.remove(event);
+            } else {
+                selectedGeneratedEvents.add(event);
+            }
+        });
+        recyclerView.setAdapter(generatedEventsAdapter);
+    }
+
 
     private void updateUI(List<Event> events) {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);

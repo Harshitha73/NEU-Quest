@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class Event implements Serializable, Comparable<Event> {
+public class Event implements Serializable, Comparable<Event>{
     private String title;
     private String startTime;
     private String endTime;

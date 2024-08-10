@@ -74,6 +74,10 @@ public class User {
         this.interests = interests;
     }
 
+    public List<String> getInterests() {
+        return interests;
+    }
+
     public void setIsAdmin(Boolean value) {
         isAdmin = value;
     }

@@ -19,6 +19,10 @@ public class DatabaseConnector {
         return instance;
     }
 
+    public DatabaseReference getGeneratedEventsReference() {
+        return database.getReference("GeneratedEvents");
+    }
+
     public DatabaseReference getUsersReference(String userId) {
         return database.getReference("Users").child(userId);
     }
