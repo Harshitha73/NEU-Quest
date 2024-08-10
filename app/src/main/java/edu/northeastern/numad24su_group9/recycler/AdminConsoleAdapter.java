@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DatabaseReference;
 import com.squareup.picasso.Picasso;
 
@@ -51,8 +52,14 @@ public class AdminConsoleAdapter extends RecyclerView.Adapter<AdminConsoleAdapte
 
         EventImageRepository eventImageRepository = new EventImageRepository();
 
-        Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(holder.imageView);
-        holder.titleTextView.setText(event.getTitle());
+        if (holder.imageView.getTag() == null || !holder.imageView.getTag().equals(event.getImage())) {
+            Glide.with(holder.imageView.getContext())
+                    .load(eventImageRepository.getEventImage(event.getImage()))
+                    .placeholder(R.drawable.placeholder_image)
+                    .override(300, 300)
+                    .into(holder.imageView);
+            holder.imageView.setTag(event.getImage());
+        }        holder.titleTextView.setText(event.getTitle());
         holder.descriptionTextView.setText(event.getDescription());
         holder.approveButton.setOnClickListener(v -> {
             event.setIsReported(false);

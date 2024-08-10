@@ -9,7 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.Picasso;
+
 
 import java.util.List;
 
@@ -57,8 +60,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         Event event = events.get(position);
 
         EventImageRepository eventImageRepository = new EventImageRepository();
-
-        Picasso.get().load(eventImageRepository.getEventImage(event.getImage())).into(holder.imageView);
+        if (holder.imageView.getTag() == null || !holder.imageView.getTag().equals(event.getImage())) {
+            Glide.with(holder.imageView.getContext())
+                    .load(eventImageRepository.getEventImage(event.getImage()))
+                    .placeholder(R.drawable.placeholder_image)
+                    .override(300, 300)
+                    .into(holder.imageView);
+            holder.imageView.setTag(event.getImage());
+        }
         holder.titleTextView.setText(event.getTitle());
         holder.descriptionTextView.setText(event.getDescription());
         holder.itemView.setOnClickListener(v -> handleEventClick(event));

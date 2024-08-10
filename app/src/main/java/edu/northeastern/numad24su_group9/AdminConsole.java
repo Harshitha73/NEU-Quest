@@ -103,6 +103,9 @@ public class AdminConsole extends AppCompatActivity {
     private void updateUI(List<Event> events) {
         recyclerView = findViewById(R.id.adminConsoleRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setItemViewCacheSize(20); // Cache 20 views in memory
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         adapter = new AdminConsoleAdapter(this);
         adapter.updateData(events);
         recyclerView.setAdapter(adapter);

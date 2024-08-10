@@ -64,6 +64,10 @@ public class RightNowActivity extends AppCompatActivity {
         // Find the views
         progressBar = findViewById(R.id.progressBar);
         recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20); // Cache 20 views in memory
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
         registerEventButton = findViewById(R.id.register_event_button); // Initialize the FloatingActionButton
         SearchView searchView = findViewById(R.id.RightNowSearchView);
 

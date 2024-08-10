@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.core.ktx.v190)
     implementation (libs.appcompat.v170alpha01)
     implementation (libs.androidx.work.runtime.ktx)
+    implementation (libs.glide)
+
 }
 
 apply(plugin = "com.google.gms.google-services")
