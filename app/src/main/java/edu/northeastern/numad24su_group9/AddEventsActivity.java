@@ -72,7 +72,7 @@ public class AddEventsActivity extends AppCompatActivity {
 
         selectedEvents = new ArrayList<>();
         selectedGeneratedEvents = new ArrayList<>();
-        eventAdapter = new EventAdapter();
+        eventAdapter = new EventAdapter(this);
         generatedEventsAdapter = new GeneratedEventsAdapter();
 
         // Find the buttons
@@ -333,7 +333,7 @@ public class AddEventsActivity extends AppCompatActivity {
     private void updateUI(List<Event> events) {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        eventAdapter = new EventAdapter();
+        eventAdapter = new EventAdapter(this);
         eventAdapter.updateData(events);
         eventAdapter.setOnItemClickListener((event) -> {
             Intent intent = new Intent(AddEventsActivity.this, EventDetailsActivity.class);
