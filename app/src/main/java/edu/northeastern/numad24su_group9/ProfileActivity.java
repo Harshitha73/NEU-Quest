@@ -28,8 +28,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
@@ -69,7 +67,6 @@ public class ProfileActivity extends AppCompatActivity {
     private UserProfileRepository userProfileRepo;
     private TextView userNameTextView;
     private List<Trip> trips;
-    private static final int CAMERA_REQUEST = 2;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private Button adminConsoleButton;
 
@@ -242,28 +239,37 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void getUser(String uid) {
-        user = new User();
-        user.setUserID(uid);
+        new Thread(() -> {
+            user = new User();
+            user.setUserID(uid);
 
-        Task<DataSnapshot> task = userRepository.getUserRef().get();
-        task.addOnSuccessListener(dataSnapshot -> {
-            if (dataSnapshot.exists()) {
-                user.setName(dataSnapshot.child("name").getValue(String.class));
-                user.setProfileImage(dataSnapshot.child("profileImage").getValue(String.class));
-                user.setCampus(dataSnapshot.child("campus").getValue(String.class));
-                user.setIsAdmin(dataSnapshot.child("isAdmin").getValue(Boolean.class));
-                Log.d("isADMIN", user.getIsAdmin().toString());
-                List<String> tripIDs = new ArrayList<>();
-                for (DataSnapshot tripSnapshot : dataSnapshot.child("plannedTrips").getChildren()) {
-                    String tripID = tripSnapshot.getValue(String.class);
-                    tripIDs.add(tripID);
+            Task<DataSnapshot> task = userRepository.getUserRef().get();
+            task.addOnSuccessListener(dataSnapshot -> {
+                if (dataSnapshot.exists()) {
+                    user.setName(dataSnapshot.child("name").getValue(String.class));
+                    user.setProfileImage(dataSnapshot.child("profileImage").getValue(String.class));
+                    user.setCampus(dataSnapshot.child("campus").getValue(String.class));
+                    user.setIsAdmin(dataSnapshot.child("isAdmin").getValue(Boolean.class));
+                    Log.d("isADMIN", user.getIsAdmin().toString());
+                    List<String> tripIDs = new ArrayList<>();
+                    for (DataSnapshot tripSnapshot : dataSnapshot.child("plannedTrips").getChildren()) {
+                        String tripID = tripSnapshot.getValue(String.class);
+                        tripIDs.add(tripID);
+                    }
+                    user.setTrips(tripIDs);
+
+                    // Update the UI on the main thread
+                    runOnUiThread(() -> {
+                        updateUI();
+                    });
                 }
-                user.setTrips(tripIDs);
-                updateUI();
-            }
-        }).addOnFailureListener(e -> {
-            Log.e("UserRepository", "Error retrieving user data: " + e.getMessage());
-        });
+            }).addOnFailureListener(e -> {
+                // Handle the failure case on the main thread
+                runOnUiThread(() -> {
+                    Log.e("UserRepository", "Error retrieving user data: " + e.getMessage());
+                });
+            });
+        }).start();
     }
 
     public void updateUI() {
@@ -301,65 +307,76 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void removeTrip(Trip trip) {
-        TripRepository tripRepository = new TripRepository();
-        DatabaseReference tripRef = tripRepository.getTripRef();
+        new Thread(() -> {
+            TripRepository tripRepository = new TripRepository();
+            DatabaseReference tripRef = tripRepository.getTripRef();
 
-        tripRef.child(trip.getTripID()).removeValue();
+            // Remove the trip from the database
+            tripRef.child(trip.getTripID()).removeValue();
 
-        UserRepository userRepository = new UserRepository(uid);
-        DatabaseReference userRef = userRepository.getUserRef();
-        Task<DataSnapshot> task = userRef.child("plannedTrips").get();
+            UserRepository userRepository = new UserRepository(uid);
+            DatabaseReference userRef = userRepository.getUserRef();
+            Task<DataSnapshot> task = userRef.child("plannedTrips").get();
 
-        task.addOnSuccessListener(dataSnapshot -> {
-            if (dataSnapshot.exists()) {
-                for (DataSnapshot tripSnapshot : dataSnapshot.getChildren()) {
-                    if (Objects.equals(tripSnapshot.getValue(String.class), trip.getTripID())) {
-                        tripSnapshot.getRef().removeValue();
-                        break;
+            task.addOnSuccessListener(dataSnapshot -> {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot tripSnapshot : dataSnapshot.getChildren()) {
+                        if (Objects.equals(tripSnapshot.getValue(String.class), trip.getTripID())) {
+                            tripSnapshot.getRef().removeValue();
+                            break;
+                        }
                     }
                 }
-            }
-        });
 
-
-
-
-        trips.remove(trip);
-        updateTripUI();
+                // Update the UI on the main thread
+                runOnUiThread(() -> {
+                    trips.remove(trip);
+                    updateTripUI();
+                });
+            }).addOnFailureListener(e -> runOnUiThread(() -> {
+                e.printStackTrace();
+                // Handle the failure case
+            }));
+        }).start();
     }
 
     public void getTrips() {
-        TripRepository tripRepository = new TripRepository();
-        trips = new ArrayList<>();
+        new Thread(() -> {
+            TripRepository tripRepository = new TripRepository();
+            trips = new ArrayList<>();
 
-        Task<DataSnapshot> task = tripRepository.getTripRef().get();
-        task.addOnSuccessListener(dataSnapshot -> {
-            if (dataSnapshot.exists()) {
-                for (String tripID : user.getTrips()) {
-                    Trip trip = new Trip();
-                    trip.setTripID(tripID);
-                    trip.setTitle(dataSnapshot.child(tripID).child("title").getValue(String.class));
-                    trip.setMinBudget(dataSnapshot.child(tripID).child("minBudget").getValue(String.class));
-                    trip.setMaxBudget(dataSnapshot.child(tripID).child("maxBudget").getValue(String.class));
-                    trip.setMealsIncluded(dataSnapshot.child(tripID).child("mealsIncluded").getValue(String.class));
-                    trip.setTransportIncluded(dataSnapshot.child(tripID).child("transportIncluded").getValue(String.class));
-                    trip.setLocation(dataSnapshot.child(tripID).child("location").getValue(String.class));
-                    trip.setStartDate(dataSnapshot.child(tripID).child("startDate").getValue(String.class));
-                    trip.setStartTime(dataSnapshot.child(tripID).child("startTime").getValue(String.class));
-                    trip.setEndDate(dataSnapshot.child(tripID).child("endDate").getValue(String.class));
-                    trip.setEndTime(dataSnapshot.child(tripID).child("endTime").getValue(String.class));
-                    List<String> eventIDs = new ArrayList<>();
-                    for (DataSnapshot eventSnapshot : dataSnapshot.child(tripID).child("eventIDs").getChildren()) {
-                        String eventID = eventSnapshot.getValue(String.class);
-                        eventIDs.add(eventID);
+            Task<DataSnapshot> task = tripRepository.getTripRef().get();
+            task.addOnSuccessListener(dataSnapshot -> {
+                if (dataSnapshot.exists()) {
+                    for (String tripID : user.getTrips()) {
+                        Trip trip = new Trip();
+                        trip.setTripID(tripID);
+                        trip.setTitle(dataSnapshot.child(tripID).child("title").getValue(String.class));
+                        trip.setMinBudget(dataSnapshot.child(tripID).child("minBudget").getValue(String.class));
+                        trip.setMaxBudget(dataSnapshot.child(tripID).child("maxBudget").getValue(String.class));
+                        trip.setMealsIncluded(dataSnapshot.child(tripID).child("mealsIncluded").getValue(String.class));
+                        trip.setTransportIncluded(dataSnapshot.child(tripID).child("transportIncluded").getValue(String.class));
+                        trip.setLocation(dataSnapshot.child(tripID).child("location").getValue(String.class));
+                        trip.setStartDate(dataSnapshot.child(tripID).child("startDate").getValue(String.class));
+                        trip.setStartTime(dataSnapshot.child(tripID).child("startTime").getValue(String.class));
+                        trip.setEndDate(dataSnapshot.child(tripID).child("endDate").getValue(String.class));
+                        trip.setEndTime(dataSnapshot.child(tripID).child("endTime").getValue(String.class));
+                        List<String> eventIDs = new ArrayList<>();
+                        for (DataSnapshot eventSnapshot : dataSnapshot.child(tripID).child("eventIDs").getChildren()) {
+                            String eventID = eventSnapshot.getValue(String.class);
+                            eventIDs.add(eventID);
+                        }
+                        trip.setEventIDs(eventIDs);
+                        trips.add(trip);
                     }
-                    trip.setEventIDs(eventIDs);
-                    trips.add(trip);
-                }
 
-                updateTripUI();
-            }
-        }).addOnFailureListener(Throwable::printStackTrace);
+                    runOnUiThread(this::updateTripUI);
+                }
+            }).addOnFailureListener(e -> runOnUiThread(() -> {
+                e.printStackTrace();
+                // Handle the failure case
+            }));
+        }).start();
     }
 
     @Override
@@ -369,32 +386,35 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadUserInterests() {
-        String uid = firebaseUser.getUid();
-        databaseReference.child("Users").child(uid).child("interests").addListenerForSingleValueEvent(new ValueEventListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onDataChange(@Nullable DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    StringBuilder interestsBuilder = new StringBuilder();
-                    for (DataSnapshot interestSnapshot : snapshot.getChildren()) {
-                        interestsBuilder.append(interestSnapshot.getValue(String.class)).append(", ");
+        new Thread(() -> {
+            String uid = firebaseUser.getUid();
+            databaseReference.child("Users").child(uid).child("interests").addListenerForSingleValueEvent(new ValueEventListener() {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onDataChange(@Nullable DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        StringBuilder interestsBuilder = new StringBuilder();
+                        for (DataSnapshot interestSnapshot : snapshot.getChildren()) {
+                            interestsBuilder.append(interestSnapshot.getValue(String.class)).append(", ");
+                        }
+                        String interests = interestsBuilder.toString();
+                        if (!interests.isEmpty()) {
+                            interests = interests.substring(0, interests.length() - 2); // Remove the last comma and space
+                        }
+                        String finalInterests = interests;
+                        runOnUiThread(() -> setFormattedText(interestsTextView, "Interests: ", finalInterests.isEmpty() ? "No interests set" : finalInterests));
+                    } else {
+                        runOnUiThread(() -> setFormattedText(interestsTextView, "Interests: ", "No interests set"));
                     }
-                    String interests = interestsBuilder.toString();
-                    if (!interests.isEmpty()) {
-                        interests = interests.substring(0, interests.length() - 2); // Remove the last comma and space
-                    }
-                    setFormattedText(interestsTextView, "Interests: ", interests.isEmpty() ? "No interests set" : interests);
-                } else {
-                    setFormattedText(interestsTextView, "Interests: ", "No interests set");
                 }
-            }
 
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                setFormattedText(interestsTextView, "Interests: ", "Error loading interests");
-            }
-        });
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    runOnUiThread(() -> setFormattedText(interestsTextView, "Interests: ", "Error loading interests"));
+                }
+            });
+        }).start();
     }
 
     private void setFormattedText(TextView textView, String label, String value) {
@@ -422,22 +442,26 @@ public class ProfileActivity extends AppCompatActivity {
     private void deleteAccount() {
         if (firebaseUser != null) {
             String uid = firebaseUser.getUid();
-            databaseReference.child("Users").child(uid).removeValue().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    firebaseUser.delete().addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            Toast.makeText(ProfileActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Toast.makeText(ProfileActivity.this, "Failed to delete account", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Toast.makeText(ProfileActivity.this, "Failed to delete user data", Toast.LENGTH_SHORT).show();
-                }
-            });
+            new Thread(() -> {
+                databaseReference.child("Users").child(uid).removeValue().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        firebaseUser.delete().addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                runOnUiThread(() -> {
+                                    Toast.makeText(ProfileActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                });
+                            } else {
+                                runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Failed to delete account", Toast.LENGTH_SHORT).show());
+                            }
+                        });
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Failed to delete user data", Toast.LENGTH_SHORT).show());
+                    }
+                });
+            }).start();
         }
     }
 
