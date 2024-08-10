@@ -13,7 +13,6 @@ import java.util.List;
 
 import edu.northeastern.numad24su_group9.R;
 import edu.northeastern.numad24su_group9.model.Event;
-import edu.northeastern.numad24su_group9.model.GeneratedEvent;
 
 public class TimelineEventAdapter extends RecyclerView.Adapter<TimelineEventAdapter.TimelineViewHolder> {
     private List<Event> events;

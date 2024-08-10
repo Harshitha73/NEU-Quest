@@ -28,8 +28,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DataSnapshot;
 
-import edu.northeastern.numad24su_group9.cache.EventCache;
-import edu.northeastern.numad24su_group9.checks.LocationChecker;
 import edu.northeastern.numad24su_group9.firebase.repository.database.UserRepository;
 import edu.northeastern.numad24su_group9.gemini.GeminiClient;
 import edu.northeastern.numad24su_group9.model.Event;
@@ -147,14 +145,6 @@ public class RightNowActivity extends AppCompatActivity {
     }
 
     public void getEvents() {
-        EventCache eventCache = EventCache.getInstance();
-
-        // Check if the events are already cached
-        if (!eventCache.getCachedEvents().isEmpty()) {
-            allEvents = eventCache.getCachedEvents();
-            getUserRegistrationPattern();
-            return;
-        }
 
         new Thread(() -> {
             allEvents = new ArrayList<>();
@@ -180,9 +170,6 @@ public class RightNowActivity extends AppCompatActivity {
                         event.setIsReported(eventSnapshot.child("isReported").getValue(Boolean.class));
                         allEvents.add(event);
                     }
-
-                    // Cache the events
-                    eventCache.addEvents(allEvents);
 
                     // Update the UI on the main thread
                     runOnUiThread(this::getUserRegistrationPattern);

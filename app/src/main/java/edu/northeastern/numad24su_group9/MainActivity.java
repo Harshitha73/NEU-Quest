@@ -1,30 +1,18 @@
 package edu.northeastern.numad24su_group9;
 
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.auth.FirebaseUser;
-
-import org.checkerframework.checker.units.qual.N;
 
 import edu.northeastern.numad24su_group9.firebase.AuthConnector;
 
 public class MainActivity extends AppCompatActivity {
-
-    Button notifyBtn;
 
     private long backPressedTime;
     private Toast backToast;
@@ -64,13 +52,6 @@ public class MainActivity extends AppCompatActivity {
             // Start the login activity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         });
-
-        // Initialize RecyclerView for square buttons
-//        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-//        String[] buttonTitles = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9"};
-//        ButtonAdapter adapter = new ButtonAdapter(this, buttonTitles);
-//        recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // 3 columns for square buttons
-//        recyclerView.setAdapter(adapter);
     }
 
     @SuppressLint("MissingSuperCall")

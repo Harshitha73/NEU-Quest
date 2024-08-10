@@ -20,10 +20,6 @@ public class UserProfileRepository {
         userProfileRef = StorageConnector.getInstance().getUsersReference();
     }
 
-    public StorageReference getUserProfileRef() {
-        return userProfileRef;
-    }
-
     public void uploadProfileImage(Uri imageUri, String user_image) {
 
         if (workerThread == null || !workerThread.isAlive()) {

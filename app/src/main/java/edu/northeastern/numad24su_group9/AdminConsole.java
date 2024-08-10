@@ -7,12 +7,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,13 +22,11 @@ import java.util.List;
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
 import edu.northeastern.numad24su_group9.model.Event;
 import edu.northeastern.numad24su_group9.recycler.AdminConsoleAdapter;
-import edu.northeastern.numad24su_group9.recycler.EventAdapter;
 
 public class AdminConsole extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private AdminConsoleAdapter adapter;
-    private List<Event> eventList;
     private ArrayList<Event> allEvents;
     private ProgressBar progressBar;
 
