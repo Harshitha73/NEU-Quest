@@ -165,7 +165,6 @@ public class RegisterEventActivity extends AppCompatActivity {
                 event.setImage(DEFAULT_EVENT_IMAGE_NAME);
             }
 
-
             EventRepository eventRepository = new EventRepository();
             DatabaseReference eventRef = eventRepository.getEventRef().child(event.getEventID());
 
@@ -186,9 +185,18 @@ public class RegisterEventActivity extends AppCompatActivity {
     private void triggerNotification(Event event) {
         NotificationHelper.createNotificationChannel(this);
 
-        Intent intent = new Intent(this, RightNowActivity.class);
+        Intent intent = new Intent(this, EventDetailsActivity.class);
+        intent.putExtra("event", event);  // Pass the event object to the activity
+        intent.putExtra("previousActivity", "RegisterEventActivity");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        // Create the PendingIntent that wraps the intent
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stat_name)
