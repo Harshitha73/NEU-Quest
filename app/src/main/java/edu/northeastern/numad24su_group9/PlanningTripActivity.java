@@ -138,7 +138,7 @@ public class PlanningTripActivity extends AppCompatActivity {
         minBudget = String.valueOf(budgetRangeSlider.getValues().get(0));
         maxBudget = String.valueOf(budgetRangeSlider.getValues().get(1));
         budgetRangeSlider.setValueFrom(0f);
-        budgetRangeSlider.setValueTo(5000f);
+        budgetRangeSlider.setValueTo(1000f);
         budgetRangeSlider.setStepSize(50f);
         budgetRangeSlider.addOnChangeListener((slider, value, fromUser) -> {
             minBudgetTextView.setText("$" + slider.getValues().get(0));

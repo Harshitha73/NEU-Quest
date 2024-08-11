@@ -20,20 +20,15 @@ import java.util.Date;
 import java.util.List;
 
 import edu.northeastern.numad24su_group9.firebase.repository.database.EventRepository;
-import edu.northeastern.numad24su_group9.firebase.repository.database.GeneratedEventRepository;
 import edu.northeastern.numad24su_group9.model.Event;
-import edu.northeastern.numad24su_group9.model.GeneratedEvent;
 import edu.northeastern.numad24su_group9.model.Trip;
 import edu.northeastern.numad24su_group9.recycler.TimelineEventAdapter;
-import edu.northeastern.numad24su_group9.recycler.TimelineGeneratedEventAdapter;
 
 public class TripDetailsActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private List<Event> allEvents;
-    private List<GeneratedEvent> generatedEvents;
     private TimelineEventAdapter eventAdapter;
-    private TimelineGeneratedEventAdapter generatedEventAdapter;
     private Trip trip;
 
     @SuppressLint("SetTextI18n")
@@ -81,40 +76,13 @@ public class TripDetailsActivity extends AppCompatActivity {
             tripPreferencesTextView.setText("Budget only for the trip. No meals or transportation included");
         }
 
-        if (trip.getEventIDs().get(0).contains("generatedEvent")) {
-            getGeneratedEvents();
-        } else {
-            getEvents();
-        }
+        getEvents();
     }
 
     private static String getCurrentTimeString(long millis) {
         DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
         Date currentDate = new Date(millis);
         return dateTimeFormat.format(currentDate);
-    }
-
-    public void getGeneratedEvents() {
-        generatedEvents = new ArrayList<>();
-        GeneratedEventRepository eventRepository = new GeneratedEventRepository();
-
-        Task<DataSnapshot> task = eventRepository.getGeneratedEventRef().get();
-        task.addOnSuccessListener(dataSnapshot -> {
-            if (dataSnapshot.exists()) {
-                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
-                    GeneratedEvent event = new GeneratedEvent();
-                    event.setId(eventSnapshot.getKey());
-                    if(trip.getEventIDs().contains(event.getId())) {
-                        event.setTitle(eventSnapshot.child("title").getValue(String.class));
-                        event.setDescription(eventSnapshot.child("description").getValue(String.class));
-                        generatedEvents.add(event);
-                    }
-                }
-
-                // Sort events by date and time
-                updateUIGenerated(generatedEvents);
-            }
-        }).addOnFailureListener(Throwable::printStackTrace);
     }
 
     public void getEvents() {
@@ -147,15 +115,6 @@ public class TripDetailsActivity extends AppCompatActivity {
                 updateUI(allEvents);
             }
         }).addOnFailureListener(Throwable::printStackTrace);
-    }
-
-    private void updateUIGenerated(List<GeneratedEvent> events) {
-
-        recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        generatedEventAdapter = new TimelineGeneratedEventAdapter();
-        generatedEventAdapter.updateData(events);
-        recyclerView.setAdapter(generatedEventAdapter);
     }
 
     private void updateUI(List<Event> events) {

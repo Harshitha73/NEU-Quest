@@ -448,31 +448,37 @@ public class ProfileActivity extends AppCompatActivity {
             new Thread(() -> {
                 TripRepository tripRepository = new TripRepository();
                 DatabaseReference tripRef = tripRepository.getTripRef();
-                user.getTrips().forEach(tripID -> tripRef.child(tripID).removeValue());
-
-                UserRepository userRepository = new UserRepository(uid);
-                DatabaseReference userRef = userRepository.getUserRef();
-                userRef.removeValue().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Delete the user
-                        firebaseUser.delete()
-                                .addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        // User has been successfully deleted
-                                        runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "User data deleted successfully", Toast.LENGTH_SHORT).show());
-                                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        // An error occurred while deleting the user
-                                        Log.e("Firebase Auth", "Error deleting user: " + Objects.requireNonNull(task.getException()).getMessage());
-                                    }
-                                });
-                    } else {
-                        runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Failed to delete user data", Toast.LENGTH_SHORT).show());
-                    }
+                user.getTrips().forEach(tripID -> {
+                    tripRef.child(tripID).removeValue().addOnCompleteListener(tripRemovetask -> {
+                        if (tripRemovetask.isSuccessful()) {
+                            // Trip has been successfully deleted
+                            UserRepository userRepository = new UserRepository(uid);
+                            DatabaseReference userRef = userRepository.getUserRef();
+                            userRef.removeValue().addOnCompleteListener(userDBRemoveTask -> {
+                                if (userDBRemoveTask.isSuccessful()) {
+                                    // Delete the user
+                                    firebaseUser.delete()
+                                        .addOnCompleteListener(userAuthRemoveTask -> {
+                                            if (userAuthRemoveTask.isSuccessful()) {
+                                                // User has been successfully deleted
+                                                runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "User data deleted successfully", Toast.LENGTH_SHORT).show());
+                                                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            } else {
+                                                // An error occurred while deleting the user
+                                                runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Failed to delete user data (auth)", Toast.LENGTH_SHORT).show());
+                                            }
+                                        });
+                                } else {
+                                    runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Failed to delete user data (db)", Toast.LENGTH_SHORT).show());
+                                }
+                            });
+                        } else {
+                            runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Failed to delete trip data", Toast.LENGTH_SHORT).show());
+                        }
+                    });
                 });
-
             }).start();
         }
     }
