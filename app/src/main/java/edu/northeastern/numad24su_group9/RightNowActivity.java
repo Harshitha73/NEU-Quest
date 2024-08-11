@@ -284,7 +284,7 @@ public class RightNowActivity extends AppCompatActivity {
     private void updateUI(List<Event> events) {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        eventAdapter = new EventAdapter();
+        eventAdapter = new EventAdapter(this);
         eventAdapter.updateData(events);
         eventAdapter.setOnItemClickListener((event) -> {
             Intent intent = new Intent(RightNowActivity.this, EventDetailsActivity.class);

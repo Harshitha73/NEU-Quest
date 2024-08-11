@@ -1,5 +1,7 @@
 package edu.northeastern.numad24su_group9.recycler;
 
+import android.content.Context;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import android.os.Handler;
 
 import edu.northeastern.numad24su_group9.R;
 import edu.northeastern.numad24su_group9.firebase.repository.storage.EventImageRepository;
@@ -21,11 +27,27 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     private List<Event> events;
     private EventAdapter.OnItemClickListener listener;
     private EventAdapter.OnItemSelectListener selectListener;
+    private Context context; // Add this
+    private ExecutorService executorService;
+    private Handler mainHandler;
 
-    public EventAdapter() {}
+
+    // Constructor accepting Context
+    public EventAdapter(Context context) {
+        this.context = context;
+        this.executorService = Executors.newFixedThreadPool(4); // A thread pool of 4 threads
+        this.mainHandler = new Handler(Looper.getMainLooper());
+    }
 
     public void updateData(List<Event> events) {
         this.events = events;
+        // Prefetch images to cache
+        for (Event event : events) {
+            EventImageRepository eventImageRepository = new EventImageRepository();
+            Glide.with(context)
+                    .load(eventImageRepository.getEventImage(event.getImage()))
+                    .preload(); // Prefetch the image
+        }
     }
 
     @NonNull
@@ -55,23 +77,31 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = events.get(position);
-
         EventImageRepository eventImageRepository = new EventImageRepository();
-        if (holder.imageView.getTag() == null || !holder.imageView.getTag().equals(event.getImage())) {
-            Glide.with(holder.imageView.getContext())
-                    .load(eventImageRepository.getEventImage(event.getImage()))
-                    .placeholder(R.drawable.placeholder_image)
-                    .override(300, 300)
-                    .into(holder.imageView);
-            holder.imageView.setTag(event.getImage());
-        }
-        holder.titleTextView.setText(event.getTitle());
-        holder.descriptionTextView.setText(event.getDescription());
+
+        // Execute heavy work in background
+        executorService.execute(() -> {
+            String imageUrl = String.valueOf(eventImageRepository.getEventImage(event.getImage()));
+
+            // Update UI on the main thread
+            mainHandler.post(() -> {
+                Glide.with(holder.imageView.getContext())
+                        .load(imageUrl)
+                        .placeholder(R.drawable.placeholder_image)
+                        .thumbnail(0.25f) // Load a low-res version first (25% of the original size)
+                        .override(300, 300)
+                        .into(holder.imageView);
+
+                holder.imageView.setTag(event.getImage());
+                holder.titleTextView.setText(event.getTitle());
+                holder.descriptionTextView.setText(event.getDescription());
+            });
+        });
+
         holder.itemView.setOnClickListener(v -> handleEventClick(event));
         holder.itemView.setOnLongClickListener(v -> {
             v.setSelected(!v.isSelected());
             handleEventSelect(event);
-            // Show the selected item in some way, e.g., change the background color or display it in a separate view
             if (v.isSelected()) {
                 v.findViewById(R.id.selection_indicator).setVisibility(View.VISIBLE);
             } else {
@@ -87,7 +117,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     }
 
     private void handleEventClick(Event event) {
-        // Handle the event click event
         if (listener != null) {
             listener.onItemClick(event);
         }

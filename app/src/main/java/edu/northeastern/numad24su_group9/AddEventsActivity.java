@@ -48,7 +48,7 @@ public class AddEventsActivity extends AppCompatActivity {
         trip = (Trip) getIntent().getSerializableExtra("trip");
 
         selectedEvents = new ArrayList<>();
-        eventAdapter = new EventAdapter();
+        eventAdapter = new EventAdapter(this);
         progressBar = findViewById(R.id.progressBar);
         recyclerView = findViewById(R.id.recyclerView);
 
@@ -172,7 +172,7 @@ public class AddEventsActivity extends AppCompatActivity {
 
     private void updateUI(List<Event> events) {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        eventAdapter = new EventAdapter();
+        eventAdapter = new EventAdapter(this);
         eventAdapter.updateData(events);
         eventAdapter.setOnItemClickListener((event) -> {
             Intent intent = new Intent(AddEventsActivity.this, EventDetailsActivity.class);
